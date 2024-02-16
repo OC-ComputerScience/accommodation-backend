@@ -47,6 +47,7 @@ require("./app/routes/emailLog.routes.js")(app);
 require("./app/routes/facultySection.routes.js")(app);
 require("./app/routes/facultyStaff.routes.js")(app);
 require("./app/routes/studentAccom.routes.js")(app);
+require("./app/routes/semester.routes.js")(app);
 require("./app/routes/util.routes.js")(app);
 
 // set port, listen for requests
