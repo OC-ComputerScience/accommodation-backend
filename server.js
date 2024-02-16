@@ -7,7 +7,15 @@ const app = express();
 
 const db = require("./app/models");
 
-db.sequelize.sync();
+let alterDB = false;
+
+const args = process.argv.slice(2);
+if (args[0] === "alter") {
+  console.log("NOTICE: Altering Database Tables\n\n");
+  alterDB = true;
+}
+
+db.sequelize.sync({ alter: alterDB});
 
 var corsOptions = {
   origin: "http://localhost:8081",

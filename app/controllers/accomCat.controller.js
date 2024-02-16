@@ -9,6 +9,7 @@ exports.create= (req, res) => {
     const accomCat = {
         accomCatId: req.body.id,
         name: req.body.name,
+        email: req.body.email,
     };
 
     //save session in the database
