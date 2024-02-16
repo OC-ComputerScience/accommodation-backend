@@ -52,7 +52,6 @@ db.section.hasMany(db.studentSection, {
 // foreign key for accommodation
 db.accommodation.belongsTo(db.accomCat, {
   foreignKey: "accomCatId",
-  onDelete: "CASCADE",
   allowNull: false
 });
 db.accomCat.hasMany(db.accommodation, {
