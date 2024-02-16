@@ -11,7 +11,7 @@ module.exports = (sequalize, Sequelize) => {
         },
         email: {
             type: Sequelize.STRING,
-            allowNull: true,
+            allowNull: false,
         }
     }, {
 
