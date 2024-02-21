@@ -6,36 +6,12 @@ const Op = db.Sequelize.Op;
 
 //create a new request and add it to the database
 exports.create = async (req, res) => {
-  if (!req.body.season) {
+  if (!req.body.semesterId) {
     res.status(400).send({
       message: "Content cannot be empty!",
     });
     return;
   }
-
-  //had to use async functions here to access methods from semester and student
-  try {
-    const semester = await Semester.findOne({
-      where: {
-        season: req.body.season,
-        year: req.body.year
-      }
-    });
-    //REMOVE ME
-    console.log(semester.semesterId);
-    const student = await Student.findOne({
-      where: {
-        email: req.body.email
-      }
-    });
-    //REMOVE ME
-    console.log(student.studentId);
-    if (!semester || !student) {
-      res.status(404).send({
-        message: 'student or semester not found',
-      });
-      return;
-    }
 
     //check in backend console, see if the insert query has all relevant information 
     //it doesn't for me and idk why
@@ -43,8 +19,8 @@ exports.create = async (req, res) => {
       dateMade: new Date(),
       approvedBy: null,
       status: 'Open',
-      semesterId: semester.semesterId,
-      studentId: student.studentId,
+      semesterId: req.body.semesterId,
+      studentId: req.body.studentId,
     };
 
     // import nodemailer helper
@@ -55,12 +31,7 @@ exports.create = async (req, res) => {
     //might also be the async here firing before the other two complete?
     const createdRequest = await Request.create(request);
     res.send(createdRequest);
-  } catch (err) {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred whilst creating the request"
-    });
-  }
+  
 };
 
 //retrieve all requests from the database
