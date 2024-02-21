@@ -13,7 +13,7 @@ let googleUser = {};
 const google_id = process.env.CLIENT_ID;
 
 exports.login = async (req, res) => {
-  console.log(req.body);
+
 
   var googleToken = req.body.credential;
 
@@ -49,7 +49,7 @@ exports.login = async (req, res) => {
       version: "v2",
     });
     let { data } = await oauth2.userinfo.get(); // get user info
-    console.log(data);
+  
     email = data.email;
     firstName = data.given_name;
     lastName = data.family_name;
@@ -85,8 +85,7 @@ exports.login = async (req, res) => {
 
   // this lets us get the user id
   if (user.id === undefined) {
-    console.log("need to get user's id");
-    console.log(user);
+
     await User.create(user)
       .then((data) => {
         console.log("user was registered");
@@ -99,11 +98,11 @@ exports.login = async (req, res) => {
         res.status(500).send({ message: err.message });
       });
   } else {
-    console.log(user);
+   
     // doing this to ensure that the user's name is the one listed with Google
     user.fName = firstName;
     user.lName = lastName;
-    console.log(user);
+  
     await User.update(user, { where: { id: user.id } })
       .then((num) => {
         if (num == 1) {
@@ -159,13 +158,14 @@ exports.login = async (req, res) => {
             fName: user.fName,
             lName: user.lName,
             userId: user.id,
+            studentId : user.studentId,
             role: user.role,
             token: session.token,
             // refresh_token: user.refresh_token,
             // expiration_date: user.expiration_date
           };
-          console.log("found a session, don't need to make another one");
-          console.log(userInfo);
+
+
           res.send(userInfo);
         }
       }

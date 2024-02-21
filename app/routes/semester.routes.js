@@ -13,7 +13,7 @@ module.exports = (app) => {
     router.get("/id/:semesterId", [authenticate], semesters.findOne);
 
     // Retrieve a single semester for a particular season and year
-    router.get("/:season/:year", [authenticate], semesters.findOneForSeasonYear);
+    router.get("/:semester", [authenticate], semesters.findOneForSemester);
 
     // Update a semester with ID
     router.put("/id/:semesterId", [authenticate], semesters.update);
