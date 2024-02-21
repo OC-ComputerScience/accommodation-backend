@@ -5,12 +5,12 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        season: {
+        semester: {
             type: Sequelize.STRING,
             allowNull: false,
         },
-        year: {
-            type: Sequelize.STRING,
+        startDate: {
+            type: Sequelize.DATE,
             allowNull: false,
         },
     }, {
