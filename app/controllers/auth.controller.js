@@ -76,6 +76,7 @@ exports.login = async (req, res) => {
           lName: lastName,
           email: email,
           role: 'student',
+         
         };
       }
     })
@@ -201,6 +202,7 @@ exports.login = async (req, res) => {
           fName: user.fName,
           lName: user.lName,
           userId: user.id,
+          studentId : user.studentId,
           role: user.role,
           token: token,
           // refresh_token: user.refresh_token,
