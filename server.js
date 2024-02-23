@@ -41,6 +41,8 @@ require("./app/routes/accommodation.routes.js")(app);
 require("./app/routes/accomCat.routes.js")(app);
 require("./app/routes/student.routes.js")(app);
 require("./app/routes/course.routes.js")(app);
+require("./app/routes/emailMessage.routes.js")(app);
+//require("./app/routes/lesson.routes.js")(app);
 require("./app/routes/user.routes.js")(app);
 require("./app/routes/emailLog.routes.js")(app);
 require("./app/routes/facultySection.routes.js")(app);
