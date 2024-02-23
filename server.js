@@ -42,12 +42,12 @@ require("./app/routes/accomCat.routes.js")(app);
 require("./app/routes/student.routes.js")(app);
 require("./app/routes/course.routes.js")(app);
 require("./app/routes/emailMessage.routes.js")(app);
-//require("./app/routes/lesson.routes.js")(app);
 require("./app/routes/user.routes.js")(app);
 require("./app/routes/emailLog.routes.js")(app);
 require("./app/routes/facultySection.routes.js")(app);
 require("./app/routes/facultyStaff.routes.js")(app);
 require("./app/routes/studentAccom.routes.js")(app);
+require("./app/routes/semester.routes.js")(app);
 require("./app/routes/util.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
