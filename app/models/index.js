@@ -21,6 +21,7 @@ db.accomCat = require("./accomCat.model.js")(sequelize, Sequelize);
 db.accommodation = require("./accommodation.model.js")(sequelize, Sequelize);
 db.course = require("./course.model.js")(sequelize, Sequelize);
 db.emailLog = require("./emailLog.model.js")(sequelize, Sequelize);
+db.emailMessage = require("./emailMessage.model.js")(sequelize, Sequelize);
 db.facultySection = require("./facultySection.model.js")(sequelize, Sequelize);
 db.facultyStaff = require("./facultyStaff.model.js")(sequelize, Sequelize);
 db.request = require("./request.model.js")(sequelize, Sequelize);
