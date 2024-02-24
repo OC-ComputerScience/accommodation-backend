@@ -13,10 +13,10 @@ module.exports = (app) => {
     router.get("/:id", [authenticate], emailMessage.findOne);
 
     // Update email message by id
-    router.put("/:id", [authenticate], emailMessage.update);
+    router.put("/:emailMessageId", [authenticate], emailMessage.update);
 
     // Delete all email messages
-    router.delete("/", [authenticate], emailMessage.deleteAll);
+    router.delete("/:emailMessageId", [authenticate], emailMessage.deleteById);
 
-    app.use("/accommodations-t4/emailMessage", router)
+    app.use("/accommodations-t4/emailMessages", router)
 }
