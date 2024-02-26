@@ -69,22 +69,7 @@ exports.findByName = (req, res) => {
   
 }
   
-  // Delete all accomodation Categories from the database.
-exports.deleteAll = (req, res) => {
-  AccomCat.destroy({
-    where: {},
-    truncate: false,
-  })
-    .then((nums) => {
-      res.send({ message: `${nums} People were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all people.",
-      });
-    });
-};
+  
 exports.deleteById = (req, res) => {
   const accomCatId = req.params.accomCatId;
 

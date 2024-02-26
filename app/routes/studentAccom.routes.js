@@ -19,7 +19,5 @@ module.exports = (app) => {
 
     router.delete("/:studentAccomId", [authenticate], studentAccom.delete);
 
-    router.delete("/", [authenticate], studentAccom.deleteAll);
-
     app.use("/accommodations-t4/studentAccom", router);
 };
