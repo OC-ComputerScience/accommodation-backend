@@ -21,8 +21,5 @@ module.exports = (app) => {
     //delete a request with id
     router.delete("/:id", [authenticate], accommodation.delete);
 
-    //delete all requests
-    router.delete("/", [authenticate], accommodation.deleteAll);
-
     app.use("/accommodations-t4/accommodation", router);
 };

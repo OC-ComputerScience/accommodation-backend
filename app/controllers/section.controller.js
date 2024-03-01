@@ -120,19 +120,3 @@ exports.delete = (req, res) => {
       });
 };
 
-//delete all sectinos from the database
-exports.deleteAll = (req, res) => {
-    Section.destory({
-        where:{},
-        truncate: false,
-    })
-    .then((nums)=>{
-        res.send({message: `${nums} sections were deleted`});
-    })
-    .catch((err) => {
-        res.status(500).send({
-            message: 
-            err.message || "some error occurred while removing all sections",
-        });
-    });
-};

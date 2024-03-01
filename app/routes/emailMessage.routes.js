@@ -15,8 +15,5 @@ module.exports = (app) => {
     // Update email message by id
     router.put("/:id", [authenticate], emailMessage.update);
 
-    // Delete all email messages
-    router.delete("/", [authenticate], emailMessage.deleteAll);
-
     app.use("/accommodations-t4/emailMessage", router)
 }

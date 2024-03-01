@@ -121,19 +121,3 @@ exports.delete = (req, res) => {
       });
 };
 
-//Really do a Hillary Clinton
-exports.deleteAll = (req, res) => {
-    EmailLog.destroy({
-      where: {},
-      truncate: false,
-    })
-      .then((nums) => {
-        res.send({ message: `${nums} Email Logs were deleted successfully!` });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while removing all email logs.",
-        });
-      });
-  };

@@ -18,7 +18,5 @@ module.exports = (app) => {
 
     router.delete("/:sectionId", [authenticate], section.delete);
 
-    router.delete("/", [authenticate], section.deleteAll);
-
     app.use("accommodation/sections", router);
 }

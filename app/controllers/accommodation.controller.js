@@ -139,19 +139,3 @@ exports.delete = (req, res) => {
       });
 };
 
-// Delete all accommodations from the database.
-exports.deleteAll = (req, res) => {
-    Accommodation.destroy({
-      where: {},
-      truncate: false,
-    })
-      .then((nums) => {
-        res.send({ message: `${nums} Requests were deleted successfully!` });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while removing all accommodations.",
-        });
-      });
-  };
