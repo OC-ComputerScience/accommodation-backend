@@ -13,6 +13,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: false,
         },
+        endDate: {
+            type: Sequelize.DATE,
+            allowNull: false,
+        },
     }, {
         timestamps: false
     });
