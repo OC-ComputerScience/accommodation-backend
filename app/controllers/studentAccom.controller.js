@@ -119,46 +119,31 @@ exports.findOne = (req, res) => {
  } ;
 
  exports.findAllForSemester = async (req, res) => {
-  console.log("attempting to find all for a semester");
-    let sem = req.params.semester.substring(0,2);
-    let season = null;
-    let year = req.params.semester.substring(2);
-    console.log(sem);
-    if(sem == "FA")
-      season = "Fall";
-    else if(sem == "SP")
-      season = "Spring";
-    else if(sem == "SU")
-      season = "Summer";
-    else if(sem == "WI")
-      season = "Winter";
-    console.log(season);
-    const semester = await Semester.findOne({where: {season: season, year: year}});
-    console.log(semester);
-    StudentAccom.findAll({
-      where: {semesterId: semester.semesterId},
-      include: [{model: db.accommodation}, {model: db.semester}, {model: db.student}]
-    })
-      .then((data) => {
-        if(data)
-          res.send(data);
-        else{
-          console.log("sending 404");
-          res.status(404).send({
-            message:err.message ||
-             `Cannot find accommodations for semester ${req.params.semester}`
-          });
-        }
-      })
-      .catch((err) => {
-        console.log("sending 500");
-        res.status(500).send({
-          message: 
-            err.message || 
-            "error retrieving accommodations for student " + studentId
-        });
+  console.log("Attempting to find all for a semester");
+  const semesterId = req.params.semesterId; // Use semesterId directly from the URL parameter
+
+  try {
+    const accommodations = await StudentAccom.findAll({
+      where: { semesterId: semesterId },
+      include: [{ model: db.accommodation }, { model: db.semester }, { model: db.student }]
+    });
+
+    if (accommodations.length > 0) {
+      res.send(accommodations);
+    } else {
+      console.log("Sending 404");
+      res.status(404).send({
+        message: `Cannot find accommodations for semester with ID ${semesterId}`
       });
- };
+    }
+  } catch (err) {
+    console.log("Sending 500");
+    res.status(500).send({
+      message: err.message || "Error retrieving accommodations for semester with ID " + semesterId
+    });
+  }
+};
+
 
   //update a student accom by the id in the request
 exports.update = (req, res) => {
