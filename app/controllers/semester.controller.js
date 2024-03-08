@@ -13,6 +13,7 @@ exports.create = (req, res) =>{
     const semester = {
         semester: req.body.semester,
         startDate: req.body.startDate,
+        endDate: req.body.endDate,
     };
     Semester.create(request)
         .then((data) => {
