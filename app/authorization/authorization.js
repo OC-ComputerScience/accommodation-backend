@@ -12,8 +12,8 @@ authenticate = (req, res, next) => {
       Session.findAll({ where: { token: token } })
         .then((data) => {
           let session = data[0];
-          console.log(session.expirationDate);
           if (session != null) {
+            console.log(session.expirationDate);
             if (session.expirationDate >= Date.now()) {
               next();
               return;
@@ -21,6 +21,11 @@ authenticate = (req, res, next) => {
               return res.status(401).send({
                 message: "Unauthorized! Expired Token, Logout and Login again",
               });
+          }
+          else{
+            return res.status(401).send({
+              message: "Unauthorized! Invalid Token, Logout and Login again",
+            });
           }
         })
         .catch((err) => {
