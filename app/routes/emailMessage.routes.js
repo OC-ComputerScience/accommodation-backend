@@ -13,7 +13,9 @@ module.exports = (app) => {
     router.get("/:id", [authenticate], emailMessage.findOne);
 
     // Update email message by id
-    router.put("/:id", [authenticate], emailMessage.update);
+    router.put("/:emailMessageId", [authenticate], emailMessage.update);
+
 
     app.use("/accommodations-t4/emailMessage", router)
+
 }

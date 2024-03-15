@@ -25,23 +25,23 @@ exports.create = (req, res) => {
 
 // Update an email message by ID
 exports.update = (req, res) => {
-    const id = req.params.id;
+    const emailMessageId = req.params.emailMessageId;
 
     EmailMessage.update(req.body, {
-        where: { emailMessageId: id }
+        where: { emailMessageId: emailMessageId }
     })
         .then((result) => {
             if (result[0] === 1) {
                 res.send({ message: "Email message was updated successfully." });
             } else {
                 res.status(404).send({
-                    message: `Cannot update email message with id=${id}. Email message not found or request body is empty.`
+                    message: `Cannot update email message with id=${emailMessageId}. Email message not found or request body is empty.`
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error updating email message with id=" + id
+                message: "Error updating email message with id=" + emailMessageId
             });
         });
 };
@@ -49,9 +49,9 @@ exports.update = (req, res) => {
 // Retrieve all email messages from the database
 exports.findAll = (req, res) => {
     const id = req.query.id;
-    let condition = id ? { emailMessageId: { [Op.like]: `%${id}%` } } : null;
+    let condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
 
-    EmailMessage.findAll({ where: condition })
+    EmailMessage.findAll({ Where: condition })
         .then((data) => {
             res.send(data);
         })
@@ -82,4 +82,28 @@ exports.findOne = (req, res) => {
             });
         });
 };
+
+
+
+exports.deleteById = (req, res) => {
+    const emailMessageId = req.params.emailMessageId;
+  
+    EmailMessage.destroy({
+        where: { emailMessageId: emailMessageId },
+    })
+    .then((num) => {
+        if (num == 1) {
+            res.send({ message: `${emailMessageId} Email Message was deleted successfully!` });
+        } else {
+            res.status(404).send({
+                message: `Cannot delete Email Message category with id=${emailMessageId}. Maybe it was not found.`,
+            });
+        }
+    })
+    .catch((err) => {
+        res.status(500).send({
+            message: "Could not delete Email Message with id=" + accomCatId,
+        });
+    });
+  };
 
