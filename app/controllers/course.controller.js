@@ -97,22 +97,6 @@ exports.delete = (req, res) => {
     });
 };
 
-//delete all courses from the database
-exports.deleteAll = (req, res) => {
-    Course.destroy({
-        where: {},
-        truncate: false,
-    })
-    .then((nums) => {
-        res.send({message: `${nums} courses were deleted successfully`});
-    })
-    .catch((err) => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while removing all courses"
-        });
-    });
-};
 
 //update a course 
 exports.update = (req, res) => {

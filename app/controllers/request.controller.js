@@ -167,19 +167,3 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all requests from the database.
-exports.deleteAll = (req, res) => {
-  Request.destroy({
-    where: {},
-    truncate: false,
-  })
-    .then((nums) => {
-      res.send({ message: `${nums} Requests were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all requests.",
-      });
-    });
-};
