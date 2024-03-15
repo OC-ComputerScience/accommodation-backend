@@ -6,6 +6,7 @@ module.exports = (app) => {
     // Create a new email message
     router.post("/", [authenticate], emailMessage.create);
 
+
     // Get all email messages
     router.get("/", [authenticate], emailMessage.findAll);
 
@@ -14,6 +15,9 @@ module.exports = (app) => {
 
     // Update email message by id
     router.put("/:emailMessageId", [authenticate], emailMessage.update);
+
+    // Delete email message by id
+    router.delete("/:emailMessageId", [authenticate], emailMessage.deleteById);
 
 
     app.use("/accommodations-t4/emailMessage", router)
