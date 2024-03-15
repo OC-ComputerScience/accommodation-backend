@@ -13,7 +13,7 @@ module.exports = (app) => {
 
     router.get("/studentId/:studentId", [authenticate], studentAccom.findAllForStudent);
 
-    router.get("/semester/:semester", [authenticate], studentAccom.findAllForSemester)
+    router.get("/semester/:semesterId", [authenticate], studentAccom.findAllForSemester)
 
     router.put(":/studentAccomId", [authenticate], studentAccom.update);
 
