@@ -88,10 +88,13 @@ exports.findOne = (req, res) => {
 exports.deleteById = (req, res) => {
     const emailMessageId = req.params.emailMessageId;
   
+  
     EmailMessage.destroy({
         where: { emailMessageId: emailMessageId },
+        
     })
     .then((num) => {
+        console.log("Controller attempting to delete email with message id: " + emailMessageId)
         if (num == 1) {
             res.send({ message: `${emailMessageId} Email Message was deleted successfully!` });
         } else {
