@@ -13,7 +13,6 @@ module.exports = (app) => {
   router.get("/:id", [authenticate], user.findOne);
 
   //retrieve by email
-
   router.get("/:email", [authenticate], user.findOne);
 
   // Update a User with id
