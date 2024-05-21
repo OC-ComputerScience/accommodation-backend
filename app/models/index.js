@@ -171,4 +171,10 @@ db.studentAccom.hasMany(db.emailLog, {
   foreignKey: "studAccId"
 });
 
+//foreign key for emailMessage
+db.emailMessage.hasMany(db.accomCat, {
+  foreignKey: "emailMessageId",
+  onDelete: "CASCADE"
+})
+
 module.exports = db;
