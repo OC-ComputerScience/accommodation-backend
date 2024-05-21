@@ -114,21 +114,3 @@ exports.delete = (req, res) => {
       });
 };
 
-//delete all faculty sections 
-
-exports.deleteAll = (req, res) => {
-    FacultySection.destroy({
-      where: {},
-      truncate: false,
-    })
-      .then((nums) => {
-        res.send({ message: `${nums} faculty section were deleted successfully!` });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while removing all faculty section.",
-        });
-      });
-  };
-

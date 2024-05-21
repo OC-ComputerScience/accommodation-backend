@@ -12,8 +12,12 @@ module.exports = (app) => {
     //get accomCat by id
     router.get("/:id", [authenticate], accomCat.findOne);
 
-    //delete all accomCats 
-    router.delete("/", [authenticate], accomCat.deleteAll);
+    //delete accomCat by Id
+    router.delete('/:accomCatId', [authenticate], accomCat.deleteById);
 
-    app.use("/accommodations-t4/accomcats", router);
+    //update accomCat by id
+    router.put('/:accomCatId', [authenticate], accomCat.update);
+
+    app.use("/accommodations-t4/accomCats", router);
 }
+

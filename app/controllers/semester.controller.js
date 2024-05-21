@@ -11,8 +11,9 @@ exports.create = (req, res) =>{
         return;
     }
     const semester = {
-        season: req.body.season,
-        year: req.body.year,
+        semester: req.body.semester,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
     };
     Semester.create(request)
         .then((data) => {
@@ -28,10 +29,7 @@ exports.create = (req, res) =>{
 
 //find all
 exports.findAll = (req, res) => {
-    console.log('in the find all');
-    const semesterId = req.query.semesterId;
-    var condition = semesterId ? {semesterId: {[Op.like]: `%${semesterId}%`}} : null;
-    Semester.findAll({ where: condition})
+    Semester.findAll({order : [['startDate', 'DESC']]})
         .then((data) => {
             if(data.length > 0)
               res.send(data);
@@ -66,10 +64,10 @@ exports.findOne = (req, res) => {
  };
 
 //find one by season + year
-exports.findOneForSeasonYear = (req, res) => {
-    const season = req.params.season;
+exports.findOneForSemester = (req, res) => {
+    const semester = req.params.semester;
     const year = req.params.year;
-    Semester.findAll({where: {season: season, year: year}})
+    Semester.findAll({where: {semester: semester}})
         .then((data) => {
             if(data){
                 res.send(data);

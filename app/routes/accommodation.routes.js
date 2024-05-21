@@ -12,7 +12,7 @@ module.exports = (app) => {
     //Retrieve all requests for accomcat
     router.get("/category/:accomCatId", [authenticate], accommodation.findAllForAccommCategory);
 
-    //retrive all accommodations for an id
+    //retrive an accommodation for an id
     router.get("/:accomId", [authenticate], accommodation.findOne);
 
     //update a request with id
@@ -21,8 +21,7 @@ module.exports = (app) => {
     //delete a request with id
     router.delete("/:id", [authenticate], accommodation.delete);
 
-    //delete all requests
-    router.delete("/", [authenticate], accommodation.deleteAll);
+    router.post("/:accomId/explanationFile", accommodation.uploadFile)
 
     app.use("/accommodations-t4/accommodation", router);
 };

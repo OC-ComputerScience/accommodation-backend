@@ -1,0 +1,55 @@
+name: Deploy to Windows Prod
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  windows-deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      DB_HOST: ${{ secrets.PROD_DB_HOST }}
+      DB_PW: ${{ secrets.PROD_DB_PW}}
+      DB_USER: ${{ secrets.PROD_DB_USER }}
+      DB_NAME: ${{ secrets.PROD_DB_NAME }}
+      CLIENT_ID: ${{secrets.CLIENT_ID}}
+      CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - uses: actions/setup-node@v3
+
+      - run: |
+          touch .env
+          echo DB_HOST="$DB_HOST" >> .env
+          echo DB_PW="$DB_PW" >> .env
+          echo DB_USER="$DB_USER" >> .env
+          echo DB_NAME="$DB_NAME" >> .env
+          echo CLIENT_ID ="$CLIENT_ID" >> .env
+          echo CLIENT_SECRET = "$CLIENT_SECRET" >> .env
+
+      - run: npm run bundle
+
+      - name: Copy folder content recursively to remote
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: deploy/
+          remote: c:/nodeapps/accommodation-backend
+          recursive: true
+          host: "accommodation.oc.edu"
+          username: "david.north"
+          privateKey: ${{ secrets.PROD_WIN_SERVER_SSH_KEY  }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Command via ssh
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: '.\deploy-accommodation-backend'
+          host: "accommodation.oc.edu"
+          username: "david.north"
+          privateKey: ${{ secrets.PROD_WIN_SERVER_SSH_KEY  }}

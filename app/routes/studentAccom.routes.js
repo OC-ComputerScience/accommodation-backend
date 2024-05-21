@@ -13,13 +13,11 @@ module.exports = (app) => {
 
     router.get("/studentId/:studentId", [authenticate], studentAccom.findAllForStudent);
 
-    router.get("/semester/:semester", [authenticate], studentAccom.findAllForSemester)
+    router.get("/semester/:semesterId", [authenticate], studentAccom.findAllForSemester)
 
     router.put(":/studentAccomId", [authenticate], studentAccom.update);
 
     router.delete("/:studentAccomId", [authenticate], studentAccom.delete);
-
-    router.delete("/", [authenticate], studentAccom.deleteAll);
 
     app.use("/accommodations-t4/studentAccom", router);
 };

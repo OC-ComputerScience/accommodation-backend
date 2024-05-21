@@ -17,6 +17,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    ocStudentId: {
+      type: Sequelize.STRING(255),
+      allowNull: true,
+    },
     permission: {
       type: Sequelize.BOOLEAN,
       allowNull: false,

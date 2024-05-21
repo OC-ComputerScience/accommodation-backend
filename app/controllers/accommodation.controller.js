@@ -2,6 +2,8 @@ const db = require("../models");
 const Accommodation = db.accommodation;
 const Op = db.Sequelize.Op;
 
+const FileHelpers = require("../utils/fileStorage.helper");
+
 //create a new accommodation and add it to the database
 exports.create = (req, res) => {
     const accommodation = {
@@ -139,19 +141,49 @@ exports.delete = (req, res) => {
       });
 };
 
-// Delete all accommodations from the database.
-exports.deleteAll = (req, res) => {
-    Accommodation.destroy({
-      where: {},
-      truncate: false,
-    })
-      .then((nums) => {
-        res.send({ message: `${nums} Requests were deleted successfully!` });
+
+
+exports.uploadFile = async (req, res) => {
+  const { accomId } = req.params
+
+  const accommodation = await Accommodation.findByPk(accomId)
+
+  if(accommodation){
+    try {
+      await FileHelpers.upload(req, res); // attempt to save new file
+
+      if (req.file == undefined) {
+        return res.status(400).send({ message: "Please upload a file!" });
+      }
+
+      if(accommodation.explanationFile && accommodation.explanationFile !== req.file.filename){    // remove old if there is one and hasn't already been replaced
+        console.log("Remove Old File", accommodation.explanationFile)
+        FileHelpers.remove(accommodation.explanationFile)
+      }
+
+      let updatedAccomodation = accommodation.dataValues;
+      updatedAccomodation.explanationFile = req.file.filename
+
+      console.log(updatedAccomodation)
+      await Accommodation.update(updatedAccomodation, {
+        where: {
+          accomId: accomId
+        }
+      }).catch((error) => {
+        console.log(error)
       })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while removing all accommodations.",
-        });
+
+      res.status(200).send({
+        message: "File Uploaded Sucessfully",
       });
-  };
+    } catch (err) {
+      res.status(500).send({
+        message: `Could not upload the file: ${req.file}. ${err}`,
+      });
+    }
+  } else {
+    res.status(404).send({
+      message: `Could not find accommodation with id=${accomId}`,
+    });
+  }
+}

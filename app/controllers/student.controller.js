@@ -4,22 +4,17 @@ const Op = db.Sequelize.Op;
 
 //create a new student and add it to the database
 exports.create = (req, res) => {
-    if(!req.body.studentId){
-        res.status(400).send({
-            message: 'Content cannot be empty!',
-        });
-        return;
-    }
+
 
     const student = {
-        studentId: req.body.studentId,
+      
         fName: req.body.fName,
         lName: req.body.lName,
         email: req.body.email,
-        //change this to always be 1 if we don't allow a student to use the system without signing
         permission: req.body.permission, 
         dateSigned: new Date(),
         version: req.body.version,
+        ocStudentId: req.body.ocStudentId,
     };
     Student.create(student)
         .then((data) => {
@@ -140,19 +135,3 @@ exports.delete = (req, res) => {
       });
 };
 
-// Delete all students from the database.
-exports.deleteAll = (req, res) => {
-    Student.destroy({
-      where: {},
-      truncate: false,
-    })
-      .then((nums) => {
-        res.send({ message: `${nums} Students were deleted successfully!` });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while removing all students.",
-        });
-      });
-  };
