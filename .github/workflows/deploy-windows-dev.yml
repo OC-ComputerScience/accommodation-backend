@@ -41,7 +41,7 @@ jobs:
           local: deploy/
           remote: c:/nodeapps/accommodation-backend
           recursive: true
-          host: "accomodationdev.oc.edu"
+          host: "accommodationdev.oc.edu"
           username: "david.north"
           privateKey: ${{ secrets.DEV_WIN_SERVER_SSH_KEY  }}
           password: ${{ secrets.PASSWORD }}
