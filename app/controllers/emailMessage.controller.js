@@ -9,6 +9,7 @@ exports.create = (req, res) => {
         name: req.body.name,
         description: req.body.description,
         text: req.body.text,
+        accomCatId: req.body.accomCatId
     };
 
     // Save email message in the database
