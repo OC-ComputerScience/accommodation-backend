@@ -4,7 +4,7 @@ const Op = db.Sequelize.Op;
 
 //create
 exports.create = (req, res) =>{
-    if(!req.body.semesterId){
+    if(!req.body.semester || !req.body.startDate || !req.body.endDate){
         res.status(400).send({
             message: "Content cannot be empty",
         });
@@ -15,7 +15,7 @@ exports.create = (req, res) =>{
         startDate: req.body.startDate,
         endDate: req.body.endDate,
     };
-    Semester.create(request)
+    Semester.create(semester)
         .then((data) => {
             res.send(data);
         })
@@ -46,7 +46,7 @@ exports.findAll = (req, res) => {
 //find one by ID
 exports.findOne = (req, res) => {
     const id = req.params.semesterId;
-    Semester.findByPk(semesterId)
+    Semester.findByPk(id)
       .then((data) => {
         if (data) {
           res.send(data);
@@ -90,7 +90,7 @@ exports.findOneForSemester = (req, res) => {
 exports.update = (req, res) => {
     const id = req.params.semesterId;
     Semester.update(req.body, {
-      where: { id: id },
+      where: { semesterId: id },
     })
       .then((num) => {
         if (num == 1) {
@@ -114,7 +114,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.semesterId;
     Semester.destroy({
-      where: { id: id },
+      where: { semesterId: id },
     })
       .then((num) => {
         if (num == 1) {
