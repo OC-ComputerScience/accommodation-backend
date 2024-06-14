@@ -171,4 +171,13 @@ db.studentAccom.hasMany(db.emailLog, {
   foreignKey: "studAccId"
 });
 
+// foreign key for email message
+db.emailMessage.belongsTo(db.accomCat, {
+  foreignKey: "accomCatId",
+  allowNull: false
+});
+db.accomCat.hasMany(db.emailMessage, {
+  foreignKey: "accomCatId"
+});
+
 module.exports = db;
