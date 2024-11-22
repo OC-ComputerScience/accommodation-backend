@@ -121,7 +121,7 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   console.log(req.body);
   const id = req.params.id;
-  console.log("in update: " + id);
+
   Request.update(req.body, {
     where: { requestId: id },
   })
