@@ -35,7 +35,7 @@ exports.findAll = (req, res) => {
         .then((data) => {
           console.log(data.length);
           if (data && data.length > 0) {
-            console.log('here', data)
+          
             res.status(200).send(data);
         } else {
             res.status(404).send({ message: "No accommodations found" });
