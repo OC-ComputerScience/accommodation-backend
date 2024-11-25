@@ -1,123 +1,133 @@
 const db = require("../models");
 const EmailLog = db.emailLog;
+const Student = db.student;
 const Op = db.Sequelize.Op;
 
-//create a new EmailLog
-
 exports.create = (req, res) => {
-    //validate request
-    if(!req.body.emailLogId){
-        res.status(400).send({
-            message: "content cannot be empty",
+    if(!req.body.toEmailAddress){
+        return res.status(400).send({
+            message: "Email address is required",
         });
-        return;
     }
 
-    //create the email log
-
     const emailLog = {
-        emailLogId: req.body.emailLogId,
-        studAccId: req.body.studAccId,
+        toEmailAddress: req.body.toEmailAddress,
         date: new Date(),
-        receipt: req.body.receipt
+        category: req.body.category || 'General',
+        studentId: req.body.studentId,
+        senderEmail: req.body.senderEmail || 'system@oc.edu',
+        messageContent: req.body.messageContent
     };
+
     EmailLog.create(emailLog)
-        .then((data) => {
-            res.send(data);
-        })
-        .catch((err) => {
+        .then(data => res.send(data))
+        .catch(err => {
             res.status(500).send({
-                message:
-                    err.message || "Some error occurred whilst creating the emailLog"
+                message: err.message || "Error creating email log"
             });
         });
 };
 
-//retrieve all of the email logs from the DB
 exports.findAll = (req, res) => {
-    const id = req.query.emailLogId;
-    var condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
-    Accommodation.findAll({ where: condition})
-        .then((data) => {
-          console.log(data);
+  console.log("Backend: findAll called");
+  const id = req.query.emailLogId;
+  var condition = id ? {emailLogId: {[Op.like]: `%${id}%`}} : null;
+  
+  EmailLog.findAll({
+      where: condition,
+      include: [{
+          model: db.studentAccom,
+          as: 'studentAccom',
+          include: [{
+              model: Student,
+              as: 'student'
+          }]
+      }],
+      logging: console.log // This will log the actual SQL query
+  })
+  .then((data) => {
+      console.log("Backend: Found data:", JSON.stringify(data, null, 2));
+      res.send(data);
+  })
+  .catch((err) => {
+      console.log("Backend Error:", err);
+      res.status(500).send({
+          message: err.message
+      });
+  });
+};
+
+exports.findOne = (req, res) => {
+    const id = req.params.emailLogId;
+    
+    EmailLog.findByPk(id, {
+        include: [{
+            model: Student,
+            as: 'student',
+            attributes: ['studentId', 'fName', 'lName', 'email']
+        }]
+    })
+    .then(data => {
+        if(data) {
             res.send(data);
-        })
-        .catch((err) => {
-            res.status(500).send({
-                message:
-                err.message || "Some error occurred whilst retrieving email Logs"
-
+        } else {
+            res.status(404).send({
+                message: `Email log ${id} not found`
             });
+        }
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: err.message || `Error retrieving email log ${id}`
         });
+    });
 };
 
-//retrieve a single email log by emailLogId
-
-exports.findOne = (req, res) =>{
+exports.update = (req, res) => {
     const id = req.params.emailLogId;
-    EmailLog.findByPk(id)
-        .then((data) => {
-            if(data){
-                res.send(data);
-            } else {
-                res.status(400).send({
-                    message: `Cannot find email log with id = ${id}`,
-                });
-            }
+    
+    // Remove fields that shouldn't be updated
+    delete req.body.emailLogId;
+    delete req.body.date;
 
-        })
-        .catch((err) => {
-            res.status(500).send({
-                message: err.message || "Error retrieving email log with id = " + id,
-            });
-        });
-};
-
-//update an email log by an id
-exports.update = (req, res) =>{
-    const id = req.params.emailLogId;
     EmailLog.update(req.body, {
-        where: { id: id },
-      })
-        .then((num) => {
-          if (num == 1) {
-            res.send({
-              message: "Email log was updated successfully.",
+        where: { emailLogId: id }
+    })
+    .then(num => {
+        if (num == 1) {
+            res.send({ message: "Email log updated successfully" });
+        } else {
+            res.status(404).send({
+                message: `Email log ${id} not found`
             });
-          } else {
-            res.send({
-              message: `Cannot update email log with id=${id}. Maybe email log was not found or req.body is empty!`,
-            });
-          }
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message: err.message || "Error updating email log with id=" + id,
-          });
+        }
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: err.message || `Error updating email log ${id}`
         });
+    });
 };
 
-//Do a hillary clinton 
+// Delete remains the same
 exports.delete = (req, res) => {
     const id = req.params.emailLogId;
+    
     EmailLog.destroy({
-      where: { id: id },
+        where: { emailLogId: id }
     })
-      .then((num) => {
+    .then(num => {
         if (num == 1) {
-          res.send({
-            message: "Email Log was deleted successfully!",
-          });
+            res.send({ message: "Email log deleted successfully" });
         } else {
-          res.send({
-            message: `Cannot delete email Log with id=${id}. Maybe request was not found!`,
-          });
+            res.status(404).send({
+                message: `Email log ${id} not found`
+            });
         }
-      })
-      .catch((err) => {
+    })
+    .catch(err => {
         res.status(500).send({
-          message: err.message || "Could not delete email log with id=" + id,
+            message: err.message || `Error deleting email log ${id}`
         });
-      });
+    });
 };
-
