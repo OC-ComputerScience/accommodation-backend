@@ -53,6 +53,7 @@ module.exports = (sequelize, Sequelize) => {
             as: 'student'
         });
     };
+    //test
 
     return EmailLog;
 };

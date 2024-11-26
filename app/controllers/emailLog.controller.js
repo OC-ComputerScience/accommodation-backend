@@ -108,7 +108,7 @@ exports.update = (req, res) => {
         });
     });
 };
-
+//changes
 // Delete remains the same
 exports.delete = (req, res) => {
     const id = req.params.emailLogId;
