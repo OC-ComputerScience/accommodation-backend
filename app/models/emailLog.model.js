@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             defaultValue: 'General'
         },
-        studentId: {           
+        studentId: {    //will also help get student name       
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
