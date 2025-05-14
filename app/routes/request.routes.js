@@ -27,3 +27,23 @@ module.exports = (app) => {
 
     app.use("/accommodations-t4/requests", router);
 };
+
+// const express = require('express');
+// const sendAccommodationEmail = require('../utils/nodeMailer.helper');
+
+// const router = express.Router();
+
+// router.post('/request', async (req, res) => {
+//     const { email } = req.body;
+
+//     if (!email) {
+//         return res.status(400).json({ message: 'Email is required' });
+//     }
+//     const result = await sendAccommodationEmail(req.body) || { success: false, message: "Email function failed" };
+//     res.status(result.success ? 200 : 500).json({ message: result.message });
+    
+//     // const result = await sendAccommodationEmail(email);
+//     // res.status(result.success ? 200 : 500).json({ message: result.message });
+// });
+
+// module.exports = router;

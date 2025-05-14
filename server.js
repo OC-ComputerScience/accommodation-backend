@@ -36,7 +36,8 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/auth.routes.js")(app);
-require("./app/routes/request.routes.js")(app);
+require("./app/routes/accomodationAdminRoute.js")(app); 
+ require("./app/routes/request.routes.js")(app);
 require("./app/routes/accommodation.routes.js")(app);
 require("./app/routes/accomCat.routes.js")(app);
 require("./app/routes/student.routes.js")(app);
@@ -50,6 +51,11 @@ require("./app/routes/studentAccom.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 require("./app/routes/util.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
+// require('./app/routes/email.routes.js'); // Just requiring the file, no explicit route registration here
+
+
+// const emailRoutes = require('./app/routes/request.routes.js');
+// app.use("/email", emailRoutes);  // Registering "/email/request"
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3024;
