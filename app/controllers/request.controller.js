@@ -4,35 +4,45 @@ const Semester = db.semester;
 const Student = db.student;
 const Op = db.Sequelize.Op;
 
-//create a new request and add it to the database
+
+
+// Create a new request and add it to the database
 exports.create = async (req, res) => {
-  if (!req.body.semesterId) {
-    res.status(400).send({
-      message: "Content cannot be empty!",
-    });
-    return;
+  if (!req.body.semesterId || !req.body.studentId || !req.body.email) {
+      return res.status(400).json({ message: "Missing required fields: semesterId, studentId, or email!" });
   }
 
-    //check in backend console, see if the insert query has all relevant information 
-    //it doesn't for me and idk why
-    const request = {
-      dateMade: new Date(),
-      approvedBy: null,
-      status: 'Open',
-      semesterId: req.body.semesterId,
-      studentId: req.body.studentId,
-    };
+  try {
+      // Create request object
+      const request = {
+          dateMade: new Date(),
+          approvedBy: null,
+          status: 'Open',
+          semesterId: req.body.semesterId,
+          studentId: req.body.studentId,
+      };
 
-    // import nodemailer helper
-    const nodemailerHelper = require('../utils/nodeMailer.helper.js');
-    nodemailerHelper.sendEmail(req.body.email, 'ADA Accommodations -- Next Steps', 
-    'Dear student, thank you for making a student ADA accommodations request! To continue in the process, please make an appointment with Student Success to review your situation and get you assigned accommodations for this semester. Please bring <document list> to your appointment.');
+      // Insert request into the database
+      const createdRequest = await Request.create(request);
+      
+      // Only send email **after** request is successfully created
+       const nodemailerHelper = require('../utils/nodeMailer.helper');
+   //  const { sendAccommodationEmail } = require('../utils/nodeMailer.helper'); // change sa to option 2 dans chat
 
-    //might also be the async here firing before the other two complete?
-    const createdRequest = await Request.create(request);
-    res.send(createdRequest);
-  
+   console.log("Sending email to:", req.body.email);
+   await nodemailerHelper.sendAccommodationEmail(
+          req.body.email, 
+          'ADA Accommodations -- Next Steps', 
+          'Dear student, thank you for making a student ADA accommodations request! To continue in the process, please make an appointment with Student Success to review your situation and get you assigned accommodations for this semester. Please bring <document list> to your appointment.'
+      );
+
+      res.status(201).json(createdRequest);
+  } catch (error) {
+      console.error("Error creating request:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
 };
+
 
 //retrieve all requests from the database
 exports.findAll = (req, res) => {
