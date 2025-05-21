@@ -13,7 +13,7 @@ module.exports = (app) => {
       });
       
       router.post("/emailChapel", (req, res) => {
-        emailAdmin.emailChapel(req.body.emailData);
+        emailAdmin.emailCategoryTemplate(req.body.studentId, req.body.semesterId, req.body.accomCatIds);
         res.send({ message: "Chapel email sent" });
       });
       

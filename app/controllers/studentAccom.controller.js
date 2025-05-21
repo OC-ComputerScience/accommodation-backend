@@ -32,6 +32,14 @@ exports.create = async (req, res) => {
             });
             return;
         }
+        //delete all studentAccoms for this student and semester
+        //a student can only have one accommodation request approved per semester
+        await StudentAccom.destroy({
+            where: {
+                studentId: student.studentId,
+                semesterId: semester.semesterId,
+            },
+        });
 
         const studentAccom = {
                 accomId: accom.accomId,
