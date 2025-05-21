@@ -4,7 +4,7 @@ const emailAdmin = require ("../utils/emailAdmin.js")
 
 exports.sendEmails = (req, res) => {
   emailHelper.emailFaculty(req.body.studentId, req.body.semesterId);
-  emailAdmin.emailChapel(req.body.emailData); 
+  emailAdmin.emailCategoryTemplate(req.body.studentId, req.body.semesterId); 
 }
 
 

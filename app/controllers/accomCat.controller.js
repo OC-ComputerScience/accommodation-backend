@@ -5,7 +5,6 @@ const Op = db.Sequelize.Op;
 //create and save a new session
 exports.create= (req, res) => {
     //create a session
-    console.log(req.body.name)
     const accomCat = {
         accomCatId: req.body.id,
         name: req.body.name,
@@ -47,7 +46,6 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  console.log("finding one")
   AccomCat.findByPk(id)
       .then((data) => {
           if (data) {
