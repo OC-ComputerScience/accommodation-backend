@@ -9,7 +9,7 @@ on:
 jobs:
   windows-deploy:
     if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       DB_HOST: ${{ secrets.PROD_DB_HOST }}
       DB_PW: ${{ secrets.PROD_DB_PW}}
@@ -19,10 +19,10 @@ jobs:
       CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: main
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
 
       - run: |
           touch .env
@@ -33,7 +33,7 @@ jobs:
           echo CLIENT_ID ="$CLIENT_ID" >> .env
           echo CLIENT_SECRET = "$CLIENT_SECRET" >> .env
 
-      - run: npm run bundle
+      - run: npm run winbundle
 
       - name: Copy folder content recursively to remote
         uses: garygrossgarten/github-action-scp@release
