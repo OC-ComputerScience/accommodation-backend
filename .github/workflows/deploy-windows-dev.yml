@@ -31,6 +31,8 @@ jobs:
           echo DB_NAME=${{env.DB_NAME}} >> .env
           echo CLIENT_ID=${{env.CLIENT_ID}} >> .env
           echo CLIENT_SECRET=${{env.CLIENT_SECRET}} >> .env
+          echo TRANSPONDER_EMAIL = 'danielndayegamiye@gmail.com' >> .env
+          echo TRANSPONDER_PW = 'mnvr yttu pirb ingl' >> .env
           
       - run: npm run winbundle
 
