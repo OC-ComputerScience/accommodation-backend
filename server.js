@@ -7,7 +7,7 @@ const app = express();
 
 const db = require("./app/models");
 
-let alterDB = false;
+let alterDB = true;
 
 const args = process.argv.slice(2);
 if (args[0] === "alter") {
