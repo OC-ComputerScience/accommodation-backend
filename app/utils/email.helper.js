@@ -5,7 +5,6 @@ const axios = require("axios");
 // Emails all faculty who have the given student for a class in the given semester.
 // Includes all Academic Student Accommodations in the email.
 exports.emailFaculty = async (studentId, semesterId) => {
-  console.log("Begin emailFacStaff method");
   // Get the student
   let student = await db.student.findByPk(studentId);
   let semester = await db.semester.findByPk(semesterId);
@@ -77,26 +76,50 @@ exports.emailFaculty = async (studentId, semesterId) => {
   //         {"CourseName":"Software and Network Engineeri","CourseID":"CENG-4113-01","Instructors":[{"Name":"Mr. Matt Batchelder","Email":"matt.batchelder@oc.edu"}]},
   //         {"CourseName":"Soft Eng of Real-Time Systems","CourseID":"ELEC-4523-01","Instructors":[{"Name":"Dr. David Waldo","Email":"david.waldo@oc.edu"}]}]}
 
-  // Iterate over all the Courses and compose/send email
+  // Step 1: Map instructors to their courses
+  const instructorMap = new Map();
+
   for (const course of courses) {
-    // Build body string
-    let body = `Dear `;
-    {
-      for (instructor of course.Instructors) {
-        body += `${instructor.Name},\n\n`;
-        body += `This email is to inform you that ${student.fName} ${student.lName} in ${course.CourseName} has the following Academic Accommodations:\n\n`;
-        for (const studAccom of studentAccoms) {
-          body += `${studAccom.dataValues.accommodation.title}\n\n`;
-        }
+    for (const instructor of course.Instructors) {
+      if (!instructorMap.has(instructor.Email)) {
+        instructorMap.set(instructor.Email, {
+          name: instructor.Name,
+          courses: [],
+        });
       }
-      body += `Please contact Student Success with any questions.`;
-      // Send email
-      nodemailer.sendEmail(
-        "d.ndayegamiye@eagles.oc.edu", // change this email to be dynamic and send to the instructors email address
-        "Notice of Student Accommodations",
-        body
-      );
-      // TODO: Insert into emailLog
+      instructorMap.get(instructor.Email).courses.push(course);
     }
+  }
+  let filenames = [];
+
+  // Step 2: Send one email per instructor
+  for (const [email, instructorInfo] of instructorMap.entries()) {
+    let body = `Dear ${instructorInfo.name},\n\n`;
+    body += `This email is to inform you that ${student.fName} ${student.lName} has the following Academic Accommodations in your courses:\n\n`;
+
+    for (const course of instructorInfo.courses) {
+      body += `Course: ${course.CourseID} ${course.CourseName}\n`;
+    }
+    for (const studAccom of studentAccoms) {
+      body += `- ${studAccom.dataValues.accommodation.title}\n`;
+
+      if (studAccom.dataValues.accommodation.explanationFile) {
+        filenames.push(studAccom.dataValues.accommodation.explanationFile);
+        
+      }
+    }
+    body += "\n";
+
+    body += `Please contact Student Success with any questions.`;
+
+    // Send email
+    nodemailer.sendEmail(
+      "d.ndayegamiye@eagles.oc.edu", // change line to send to actual instructor email
+      "Notice of Student Accommodations",
+      body,
+      filenames
+    );
+
+    // TODO: Insert into emailLog
   }
 };

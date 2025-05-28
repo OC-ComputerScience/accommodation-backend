@@ -49,7 +49,6 @@ exports.sendCategoryEmail = async (req, res) => {
 
     //   ? accommodation.accomCatId.emailMessage.text // Use predefined email text if available
     //   : `An accommodation request for ${accommodation.accomCat.name} has been approved.`; // Default fallback text
-    console.log("here's the name ", accommodation.accomCat.name);
     // Replace placeholders in the email text with actual data
     const emailText = emailContent
       .replace("{studentId}", studentId)

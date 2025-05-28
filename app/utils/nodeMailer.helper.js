@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const {getFilePath} = require("./fileStorage.helper");
 
 const transporter = nodemailer.createTransport({
   service: "gmail", // Or use another email provider
@@ -27,7 +28,7 @@ const sendAccommodationEmail = async (toEmail, subject, message) => {
 // module.exports = sendAccommodationEmail;
 module.exports.sendAccommodationEmail = sendAccommodationEmail;
 
-exports.sendEmail = (recipient, subject, body) => {
+exports.sendEmail = (recipient, subject, body, filenames = []) => {
   console.log("Inside nodemailerhelper");
   // Create transporter
   const transporter = nodemailer.createTransport({
@@ -45,6 +46,13 @@ exports.sendEmail = (recipient, subject, body) => {
     subject: subject,
     text: body,
   };
+  // Only add attachments if we have any filenames
+  if (filenames.length > 0) {
+    mailOptions.attachments = filenames.map((filename) => ({
+      filename: filename,
+      path: getFilePath(filename),
+    }));
+  }
   console.log("Sending email : " + JSON.stringify(mailOptions, null, 2));
   // add this section back to turn on sending emails via OC email server
   transporter.sendMail(mailOptions, (error, info) => {
