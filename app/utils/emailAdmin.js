@@ -3,11 +3,22 @@ const nodemailer = require("./nodeMailer.helper");
 const axios = require("axios");
 
 exports.emailCategoryTemplate = async (studentId, semesterId, accomCatIds) => {
-  console.log("Begin emailCategoryTemplate method" + studentId);
   // Get the student
   let student = await db.student.findByPk(studentId);
   let semester = await db.semester.findByPk(semesterId);
   for (const accomCatId of accomCatIds) {
+    // Get student specific accommodations
+    let studentAccoms = await db.studentAccom.findAll({
+      where: {
+        studentId: studentId,
+        semesterId: semesterId,
+      },
+      include: {
+        model: db.accommodation,
+        required: true,
+      },
+    });
+
     // Get the email message
     const message = await db.emailMessage.findOne({
       where: { accomCatId },
@@ -34,12 +45,21 @@ exports.emailCategoryTemplate = async (studentId, semesterId, accomCatIds) => {
     };
 
     let body = fillTemplate(message.text, messageData);
+    let filenames = [];
 
     // Fix line breaks
     body = body.replace(/\\n/g, "\n"); // for plain text
+    body += `\n\naccommodation:`;
+    for (const sa of studentAccoms) {
+      const accom = sa.accommodation;
+      if (accom.accomCatId === accomCatId) {
+        body += `\n\n${accom.title}`;
+        filenames.push(accom.explanationFile);
+      }
+    }
 
     // Send the email
-    nodemailer.sendEmail(recipient, subject, body);
+    nodemailer.sendEmail(recipient, subject, body, filenames);
   }
 };
 function fillTemplate(template, data) {

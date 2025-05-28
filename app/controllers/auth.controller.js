@@ -56,7 +56,6 @@ exports.login = async (req, res) => {
 
   }
 
-  console.log(lastName);
 
   let user = {};
   let session = {};
@@ -208,7 +207,6 @@ exports.login = async (req, res) => {
           // refresh_token: user.refresh_token,
           // expiration_date: user.expiration_date
         };
-        console.log(userInfo);
         res.send(userInfo);
       })
       .catch((err) => {
@@ -267,14 +265,12 @@ exports.authorize = async (req, res) => {
         refresh_token: user.refresh_token,
         expiration_date: user.expiration_date,
       };
-      console.log(userInfo);
       res.send(userInfo);
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 
-  console.log(tokens);
   console.log(oauth2Client);
 };
 
