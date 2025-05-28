@@ -12,7 +12,6 @@ exports.create = (req, res) => {
         });
         return;
     }
-    console.log("inside course.controller.js create function");
 
     //create a course
 

@@ -34,7 +34,6 @@ exports.findAll = (req, res) => {
     var condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     FacultySection.findAll({ where: condition})
         .then((data) => {
-          console.log(data);
             res.send(data);
         })
         .catch((err) => {

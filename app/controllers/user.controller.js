@@ -12,7 +12,6 @@ exports.create = (req, res) => {
     return;
   }
 
-  console.log("Inside user.controller.js create function");
 
   // Create a User
   const user = {
