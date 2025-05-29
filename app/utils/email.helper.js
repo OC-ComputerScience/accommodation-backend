@@ -114,7 +114,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
     // Send email
     nodemailer.sendEmail(
-      "d.ndayegamiye@eagles.oc.edu", // change line to send to actual instructor email
+      "david.north@oc.edu", // change line to send to actual instructor email
       "Notice of Student Accommodations",
       body,
       filenames
