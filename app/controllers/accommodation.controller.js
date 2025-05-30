@@ -153,10 +153,10 @@ exports.uploadFile = async (req, res) => {
         return res.status(400).send({ message: "Please upload a file!" });
       }
 
-      if(accommodation.explanationFile && accommodation.explanationFile !== req.file.filename){    // remove old if there is one and hasn't already been replaced
-        console.log("Remove Old File", accommodation.explanationFile)
-        FileHelpers.remove(accommodation.explanationFile)
-      }
+      // if(accommodation.explanationFile && accommodation.explanationFile !== req.file.filename){    // remove old if there is one and hasn't already been replaced
+      //   console.log("Remove Old File", accommodation.explanationFile)
+      //   FileHelpers.remove(accommodation.explanationFile)
+      // }
 
       let updatedAccomodation = accommodation.dataValues;
       updatedAccomodation.explanationFile = req.file.filename

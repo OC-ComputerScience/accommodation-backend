@@ -56,9 +56,9 @@ exports.emailFaculty = async (studentId, semesterId) => {
       );
 
       console.log("error retrieving person's classes", error);
-      res.status(500).send({
-        message: "Error retrieving Person classes with student ID=" + studentId,
-      });
+      // res.status(500).send({
+      //   message: "Error retrieving Person classes with student ID=" + studentId,
+      // });
       console.log(error);
     });
   // Map the faculty array to eliminate excess data
