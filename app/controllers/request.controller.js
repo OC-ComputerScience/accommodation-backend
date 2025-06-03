@@ -13,33 +13,42 @@ exports.create = async (req, res) => {
   }
 
   try {
-      // Create request object
-      const request = {
-          dateMade: new Date(),
-          approvedBy: null,
+    // Create request object
+    const request = {
+      dateMade: new Date(),
+      approvedBy: null,
           status: 'Open',
-          semesterId: req.body.semesterId,
-          studentId: req.body.studentId,
-      };
+      semesterId: req.body.semesterId,
+      studentId: req.body.studentId,
+    };
 
-      // Insert request into the database
-      const createdRequest = await Request.create(request);
-      
-      // Only send email **after** request is successfully created
-       const nodemailerHelper = require('../utils/nodeMailer.helper');
-   //  const { sendAccommodationEmail } = require('../utils/nodeMailer.helper'); // change sa to option 2 dans chat
+    // Insert request into the database
+    const createdRequest = await Request.create(request);
 
-   console.log("Sending email to:", req.body.email);
-   await nodemailerHelper.sendAccommodationEmail(
-          req.body.email, 
-          'ADA Accommodations -- Next Steps', 
-          'Dear student, thank you for making a student ADA accommodations request! To continue in the process, please make an appointment with Student Success to review your situation and get you assigned accommodations for this semester. Please bring <document list> to your appointment.'
-      );
+    // Only send email **after** request is successfully created
+     const nodemailerHelper = require('../utils/nodeMailer.helper');
 
-      res.status(201).json(createdRequest);
+    // get email information
+    const emailMessage = await db.emailMessage.findOne({
+      include: [
+        {
+          model: db.accomCat,
+          where: { name: "student_accommodation_request_received" },
+        },
+      ],
+    });
+
+    console.log("Sending email to:", req.body.email);
+    nodemailerHelper.sendEmail(
+      req.body.email,
+      emailMessage.description,
+      emailMessage.text
+    );
+
+    res.status(201).json(createdRequest);
   } catch (error) {
-      console.error("Error creating request:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error creating request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -88,23 +97,23 @@ exports.findAllForStatus = (req, res) => {
 exports.findAllForStudent = (req, res) => {
     const studentId = req.params.studentId
     Request.findAll({where: {studentId: studentId}, include: [{model: db.student}, {model:db.semester}]})
-        .then((data) => {
+    .then((data) => {
             if(data){
-                res.send(data);
+        res.send(data);
             }
             else{
-                res.status(404).send({
-                    message: `Cannot find ${student}'s requests.`,
-                });
-            }
-        })
-        .catch((err) => {
-            res.status(500).send({
+        res.status(404).send({
+          message: `Cannot find ${student}'s requests.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
               message:
                 err.message ||
                 "Error retrieving " + student + "'s requests.",
-            });
-        });
+      });
+    });
 };
 
 //find a single request with an id
@@ -128,15 +137,78 @@ exports.findOne = (req, res) => {
 };
 
 //update a request by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   console.log(req.body);
   const id = req.params.id;
+
+  const request = await Request.findByPk(id, {
+    include: [{ model: db.student }],
+  });
+
+  const { studentId, semesterId } = request;
+
+  // 2. Get StudentAccoms with accommodations included
+  const studentAccoms = await db.studentAccom.findAll({
+    where: {
+      studentId,
+      semesterId,
+    },
+    include: [
+      {
+        model: db.accommodation,
+        attributes: ["title", "categoryName"],
+      },
+    ],
+  });
+  console.log("studentAccoms:", studentAccoms);
+
+  const accommodations = studentAccoms
+    .map((sa) => {
+      const accom = sa.accommodation;
+      return {
+        title: accom?.title,
+        categoryName: accom?.categoryName,
+      };
+    })
+    .filter((a) => a.title && a.categoryName);
+
+  const formattedList = studentAccoms
+    .map((sa) => {
+      const accom = sa.accommodation;
+      return accom?.title && accom?.categoryName
+        ? `• ${accom.title} (${accom.categoryName})`
+        : null;
+    })
+    .filter(Boolean)
+    .join("\n");
+
+    // Get the email message
+    const emailMessage = await db.emailMessage.findOne({
+      include: [
+        {
+          model: db.accomCat,
+          where: { name: "student_accommodation_approved" },
+        },
+      ],
+    });
+
+
+  const message = emailMessage.text.replace('{accommodationList}', formattedList);
 
   Request.update(req.body, {
     where: { requestId: id },
   })
-    .then((num) => {
+    .then(async (num) => {
       if (num == 1) {
+        // Only send email **after** request is successfully created
+        const nodemailerHelper = require("../utils/nodeMailer.helper");
+
+        nodemailerHelper.sendEmail(
+          request.student.email,
+          emailMessage.description,
+          message
+        );
+
         res.send({
           message: "request was updated successfully.",
         });
