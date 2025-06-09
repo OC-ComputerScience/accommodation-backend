@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const {getFilePath} = require("./fileStorage.helper");
+const db = require("../models");
 
 const transporter = nodemailer.createTransport({
   service: "gmail", // Or use another email provider
@@ -34,4 +35,26 @@ exports.sendEmail = (recipient, subject, body, filenames = []) => {
       console.log("Email sent: " + info.response);
     }
   });
+};
+
+exports.logEmail = (studAccId = null, category, studentId, recipient, body) => {
+  
+        const emailLog = {
+          studAccId: studAccId,
+          category: category,
+          studentId: studentId,
+          toEmailAddress: recipient,
+          senderEmail: "studentsuccess@oc.edu",
+          date: new Date(),
+          messageContent: body.replace(/\\n/g, '\n'),
+        };
+        db.emailLog.create(emailLog)
+        .then(console.log("Email log created"))
+        .catch(err => {
+            console.log({
+                message: err.message || "Error creating email log"
+            });
+        });
+
+
 };

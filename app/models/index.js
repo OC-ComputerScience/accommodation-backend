@@ -1,6 +1,3 @@
-
-
-const { request } = require("express");
 const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
@@ -77,6 +74,11 @@ db.studentAccom.belongsTo(db.student, {
   onDelete: "CASCADE",
   allowNull: false
 });
+db.studentAccom.belongsTo(db.user, {
+  foreignKey: "adminId",
+  onDelete: "CASCADE",
+  allowNull: false
+});
 // Bidirectionality for student accommodation
 db.semester.hasMany(db.studentAccom, {
   foreignKey: "semesterId"
@@ -86,6 +88,9 @@ db.accommodation.hasMany(db.studentAccom, {
 });
 db.student.hasMany(db.studentAccom, {
   foreignKey: "studentId"
+});
+db.user.hasMany(db.studentAccom, {
+  foreignKey: "adminId"
 });
 
 // foreign key for request

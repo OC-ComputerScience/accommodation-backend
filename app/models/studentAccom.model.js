@@ -13,8 +13,15 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: true,
         },
-    }, {
-        timestamps: false
+        status: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            defaultValue:'Approved'
+        },
+        adminId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+        }
     });
 
     return StudentAccom;

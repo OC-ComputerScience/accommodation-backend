@@ -29,7 +29,6 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  console.log("Backend: findAll called");
   const id = req.query.emailLogId;
   var condition = id ? {emailLogId: {[Op.like]: `%${id}%`}} : null;
   
@@ -43,7 +42,6 @@ exports.findAll = (req, res) => {
               as: 'student'
           }]
       }],
-      logging: console.log // This will log the actual SQL query
   })
   .then((data) => {
       console.log("Backend: Found data:", JSON.stringify(data, null, 2));
