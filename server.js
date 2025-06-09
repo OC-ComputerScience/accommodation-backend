@@ -15,7 +15,7 @@ if (args[0] === "alter") {
   alterDB = true;
 }
 
-db.sequelize.sync({ alter: alterDB});
+db.sequelize.sync({ force: alterDB});
 
 var corsOptions = {
   origin: "http://localhost:8081",
