@@ -137,3 +137,4 @@ exports.emailFaculty = async (studentId, semesterId) => {
     // TODO: Insert into emailLog
   }
 };
+}
