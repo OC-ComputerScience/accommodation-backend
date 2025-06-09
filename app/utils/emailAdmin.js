@@ -55,6 +55,7 @@ exports.emailCategoryTemplate = async (studentId, semesterId, accomCatIds) => {
       if (accom.accomCatId === accomCatId) {
         body += `\n\n${accom.title}`;
         filenames.push(accom.explanationFile);
+        nodemailer.logEmail(sa.studentAccomId, accom.categoryName, studentId, recipient, body);
       }
     }
 

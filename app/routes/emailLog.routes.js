@@ -18,5 +18,5 @@ module.exports = (app) => {
     // Delete a emailLog with id
     router.delete("/:emailLogId", [authenticate], emailLog.delete);
   
-    app.use("/accommodation/emailLog", router);
+    app.use("/accommodations-t4/emailLog", router);
   };

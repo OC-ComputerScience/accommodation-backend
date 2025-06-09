@@ -1,7 +1,5 @@
 const db = require("../models");
 const Request = db.request;
-const Semester = db.semester;
-const Student = db.student;
 const Op = db.Sequelize.Op;
 
 
@@ -37,6 +35,14 @@ exports.create = async (req, res) => {
         },
       ],
     });
+
+    nodemailerHelper.logEmail(
+      "student_accommodation_request_received",
+      req.body.studentId,
+      req.body.email,
+      emailMessage.text
+    );
+
 
     console.log("Sending email to:", req.body.email);
     nodemailerHelper.sendEmail(
@@ -103,7 +109,7 @@ exports.findAllForStudent = (req, res) => {
             }
             else{
         res.status(404).send({
-          message: `Cannot find ${student}'s requests.`,
+          message: `Cannot find ${studentId}'s requests.`,
         });
       }
     })
@@ -111,7 +117,7 @@ exports.findAllForStudent = (req, res) => {
       res.status(500).send({
               message:
                 err.message ||
-                "Error retrieving " + student + "'s requests.",
+                "Error retrieving " + studentId + "'s requests.",
       });
     });
 };
@@ -138,7 +144,6 @@ exports.findOne = (req, res) => {
 
 //update a request by the id in the request
 exports.update = async (req, res) => {
-  console.log(req.body);
   const id = req.params.id;
 
   const request = await Request.findByPk(id, {
@@ -162,16 +167,6 @@ exports.update = async (req, res) => {
   });
   console.log("studentAccoms:", studentAccoms);
 
-  const accommodations = studentAccoms
-    .map((sa) => {
-      const accom = sa.accommodation;
-      return {
-        title: accom?.title,
-        categoryName: accom?.categoryName,
-      };
-    })
-    .filter((a) => a.title && a.categoryName);
-
   const formattedList = studentAccoms
     .map((sa) => {
       const accom = sa.accommodation;
@@ -191,9 +186,11 @@ exports.update = async (req, res) => {
         },
       ],
     });
+    const semester = await db.semester.findByPk(semesterId);
 
 
-  const message = emailMessage.text.replace('{accommodationList}', formattedList);
+  let message = emailMessage.text.replace('{accommodationList}', formattedList);
+  message = message.replace('{semesterName}', semester.semester);
 
   Request.update(req.body, {
     where: { requestId: id },
@@ -202,6 +199,13 @@ exports.update = async (req, res) => {
       if (num == 1) {
         // Only send email **after** request is successfully created
         const nodemailerHelper = require("../utils/nodeMailer.helper");
+        nodemailerHelper.logEmail(
+          null,
+          "student_accommodation_approved",
+          studentId,
+          request.student.email,
+          message
+        );
 
         nodemailerHelper.sendEmail(
           request.student.email,

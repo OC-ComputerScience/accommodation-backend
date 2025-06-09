@@ -101,16 +101,30 @@ exports.emailFaculty = async (studentId, semesterId) => {
       body += `Course: ${course.CourseID} ${course.CourseName}\n`;
     }
     for (const studAccom of studentAccoms) {
-      body += `- ${studAccom.dataValues.accommodation.title}\n`;
+      if(studAccom.dataValues.status != "Approved") {continue;}
+      body += `- ${studAccom.dataValues.accommodation.title}`;
+      const timeDiff = Math.abs(studAccom.dataValues.createdAt.getTime() - studAccom.dataValues.updatedAt.getTime());
+      if(timeDiff < 1000) { // less than a second difference that means it is a new entry.
+        body += " **NEW**\n";
+      }
+      else
+      {
+        body += "\n"
+      }
 
       if (studAccom.dataValues.accommodation.explanationFile) {
         filenames.push(studAccom.dataValues.accommodation.explanationFile);
         
       }
+      nodemailer.logEmail(studAccom.dataValues.studentAccomId,'Academics', studentId, email, body);
+
+    for (const course of instructorInfo.courses) {
+      body += `Course: ${course.CourseID} ${course.CourseName}\n`;
     }
     body += "\n";
 
     body += `Please contact Student Success with any questions.`;
+
 
     // Send email
     nodemailer.sendEmail(
