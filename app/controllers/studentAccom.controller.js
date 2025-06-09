@@ -1,6 +1,5 @@
 const db = require("../models");
 const StudentAccom = db.studentAccom;
-const Accom = db.accommodation;
 const Semester = db.semester;
 const Student = db.student;
 const Op = db.Sequelize.Op;
@@ -29,12 +28,55 @@ exports.create = async (req, res) => {
     }
     //delete all studentAccoms for this student and semester
     //a student can only have one accommodation request approved per semester
-    await StudentAccom.destroy({
+    const existingAccommodations = await StudentAccom.findAll({
       where: {
         studentId: student.studentId,
         semesterId: semester.semesterId,
       },
     });
+
+    // compare existing accomodations to new ones and set existing to Removed.
+    for (const existingAccommodation of existingAccommodations) {
+      const found = selectedAccommodations.find(
+        (accom) => accom.accomId === existingAccommodation.accomId
+      );
+
+      if (!found) {
+        const result = await StudentAccom.update(
+          {
+            status: "Removed",
+          },
+          {
+            where: {
+              studentAccomId: existingAccommodation.studentAccomId,
+            },
+          }
+        );
+
+      }
+      else{
+        // remove the accommodation from the list of selected accommodations
+        // by checking the ones with the same accomId
+        // update the studentAccom status to Approved
+        selectedAccommodations.splice(
+          selectedAccommodations.findIndex(
+            (accom) => accom.accomId === existingAccommodation.accomId
+          ),
+          1
+        );
+        const result = await StudentAccom.update(
+          {
+            status: "Approved",
+          },
+          {
+            where: {
+              studentAccomId: existingAccommodation.studentAccomId,
+            },
+          }
+        );
+
+      }
+    }
 
     // Step 2: Build all student accommodations
     const studentAccoms = selectedAccommodations.map((accom) => ({
@@ -44,6 +86,7 @@ exports.create = async (req, res) => {
       updatedAt: new Date(),
       semesterId: semester.semesterId,
       studentId: student.studentId,
+      adminId: accom.adminId
     }));
 
     // Step 3: Bulk create them all at once
@@ -82,7 +125,7 @@ exports.findAll = (req, res) => {
 
 //find a single request with an id
 exports.findOne = (req, res) => {
-  const id = req.params.studentAccomId;
+  const studentAccomId = req.params.studentAccomId;
   StudentAccom.findByPk(studentAccomId)
     .then((data) => {
       if (data) {
@@ -166,7 +209,7 @@ exports.findAllForSemester = async (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.studentAccomId;
   StudentAccom.update(req.body, {
-    where: { id: studentAccomId },
+    where: { id: id },
   })
     .then((num) => {
       if (num == 1) {
