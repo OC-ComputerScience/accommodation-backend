@@ -43,6 +43,7 @@ exports.create = async (req, res) => {
       emailMessage.text
     );
 
+
     console.log("Sending email to:", req.body.email);
     nodemailerHelper.sendEmail(
       req.body.email,

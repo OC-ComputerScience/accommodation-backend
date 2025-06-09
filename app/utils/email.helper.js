@@ -118,6 +118,8 @@ exports.emailFaculty = async (studentId, semesterId) => {
       }
       nodemailer.logEmail(studAccom.dataValues.studentAccomId,'Academics', studentId, email, body);
 
+    for (const course of instructorInfo.courses) {
+      body += `Course: ${course.CourseID} ${course.CourseName}\n`;
     }
     body += "\n";
 
