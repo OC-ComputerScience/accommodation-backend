@@ -37,6 +37,7 @@ exports.create = async (req, res) => {
     });
 
     nodemailerHelper.logEmail(
+      null,
       "student_accommodation_request_received",
       req.body.studentId,
       req.body.email,

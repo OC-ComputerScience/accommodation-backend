@@ -1,5 +1,4 @@
 module.exports = (app) => {
-  const utils = require("../controllers/util.controller.js");
   var router = require("express").Router();
   const emailAdmin = require("../utils/emailAdmin.js");
   const emailHelper = require("../utils/email.helper.js");
@@ -14,7 +13,7 @@ module.exports = (app) => {
 
   router.post("/emailChapel", async (req, res) => {
     try {
-      await emailAdmin.emailCategoryTemplate(
+      await emailAdmin.send_non_faculty_emails(
         req.body.studentId,
         req.body.semesterId,
         req.body.accomCatIds
