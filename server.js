@@ -7,7 +7,7 @@ const app = express();
 
 const db = require("./app/models");
 
-let alterDB = true;
+let alterDB = false;
 
 const args = process.argv.slice(2);
 if (args[0] === "alter") {
@@ -15,7 +15,7 @@ if (args[0] === "alter") {
   alterDB = true;
 }
 
-db.sequelize.sync({ force: alterDB});
+db.sequelize.sync({ alter: alterDB});
 
 var corsOptions = {
   origin: "http://localhost:8081",
@@ -51,11 +51,6 @@ require("./app/routes/studentAccom.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 require("./app/routes/util.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
-// require('./app/routes/email.routes.js'); // Just requiring the file, no explicit route registration here
-
-
-// const emailRoutes = require('./app/routes/request.routes.js');
-// app.use("/email", emailRoutes);  // Registering "/email/request"
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3024;

@@ -1,14 +1,13 @@
 const db = require("../models");
 const nodemailer = require("./nodeMailer.helper");
-const axios = require("axios");
 
-exports.emailCategoryTemplate = async (studentId, semesterId, accomCatIds) => {
+exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => {
   // Get the student
-  let student = await db.student.findByPk(studentId);
-  let semester = await db.semester.findByPk(semesterId);
+  const student = await db.student.findByPk(studentId);
+  const semester = await db.semester.findByPk(semesterId);
   for (const accomCatId of accomCatIds) {
     // Get student specific accommodations
-    let studentAccoms = await db.studentAccom.findAll({
+    const studentAccommodations = await db.studentAccom.findAll({
       where: {
         studentId: studentId,
         semesterId: semesterId,
@@ -45,17 +44,17 @@ exports.emailCategoryTemplate = async (studentId, semesterId, accomCatIds) => {
     };
 
     let body = fillTemplate(message.text, messageData);
-    let filenames = [];
+    const filenames = [];
 
     // Fix line breaks
     body = body.replace(/\\n/g, "\n"); // for plain text
     body += `\n\naccommodation:`;
-    for (const sa of studentAccoms) {
-      const accom = sa.accommodation;
-      if (accom.accomCatId === accomCatId) {
-        body += `\n\n${accom.title}`;
-        filenames.push(accom.explanationFile);
-        nodemailer.logEmail(sa.studentAccomId, accom.categoryName, studentId, recipient, body);
+    for (const studentAccommodation of studentAccommodations) {
+      const accommodation = studentAccommodation.accommodation;
+      if (accommodation.accomCatId === accomCatId) {
+        body += `\n\n${accommodation.title}`;
+        filenames.push(accommodation.explanationFile);
+        nodemailer.logEmail(studentAccommodation.studentAccomId, accommodation.categoryName, studentId, recipient, body);
       }
     }
 

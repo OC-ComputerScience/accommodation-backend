@@ -6,10 +6,10 @@ const axios = require("axios");
 // Includes all Academic Student Accommodations in the email.
 exports.emailFaculty = async (studentId, semesterId) => {
   // Get the student
-  let student = await db.student.findByPk(studentId);
-  let semester = await db.semester.findByPk(semesterId);
+  const student = await db.student.findByPk(studentId);
+  const semester = await db.semester.findByPk(semesterId);
 
-  let studentAccoms = await db.studentAccom.findAll({
+  const studentAccommodations = await db.studentAccom.findAll({
     where: {
       studentId: studentId,
       semesterId: semesterId,
@@ -33,7 +33,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
   let courses = [];
   // getting student classes for Daniel's ID
-  let ocRequest =
+  const ocRequest =
     "http://stingray.oc.edu/api/accommodationuserschedule/" +
     "1568650" +
     "/" +
@@ -100,10 +100,10 @@ exports.emailFaculty = async (studentId, semesterId) => {
     for (const course of instructorInfo.courses) {
       body += `Course: ${course.CourseID} ${course.CourseName}\n`;
     }
-    for (const studAccom of studentAccoms) {
-      if(studAccom.dataValues.status != "Approved") {continue;}
-      body += `- ${studAccom.dataValues.accommodation.title}`;
-      const timeDiff = Math.abs(studAccom.dataValues.createdAt.getTime() - studAccom.dataValues.updatedAt.getTime());
+    for (const studentAccommodation of studentAccommodations) {
+      if(studentAccommodation.dataValues.status != "Approved") {continue;}
+      body += `- ${studentAccommodation.dataValues.accommodation.title}`;
+      const timeDiff = Math.abs(studentAccommodation.dataValues.createdAt.getTime() - studentAccommodation.dataValues.updatedAt.getTime());
       if(timeDiff < 1000) { // less than a second difference that means it is a new entry.
         body += " **NEW**\n";
       }
@@ -112,12 +112,12 @@ exports.emailFaculty = async (studentId, semesterId) => {
         body += "\n"
       }
 
-      if (studAccom.dataValues.accommodation.explanationFile) {
-        filenames.push(studAccom.dataValues.accommodation.explanationFile);
+      if (studentAccommodation.dataValues.accommodation.explanationFile) {
+        filenames.push(studentAccommodation.dataValues.accommodation.explanationFile);
         
       }
-      nodemailer.logEmail(studAccom.dataValues.studentAccomId,'Academics', studentId, email, body);
-
+      nodemailer.logEmail(studentAccommodation.dataValues.studentAccomId,'Academics', studentId, email, body);
+    }
     for (const course of instructorInfo.courses) {
       body += `Course: ${course.CourseID} ${course.CourseName}\n`;
     }
@@ -134,7 +134,6 @@ exports.emailFaculty = async (studentId, semesterId) => {
       filenames
     );
 
-    // TODO: Insert into emailLog
   }
 };
-}
+

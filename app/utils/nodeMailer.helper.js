@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-exports.sendEmail = (recipient, subject, body, filenames = []) => {
+exports.sendEmail = (recipient, subject, body, attachmentFilenames = []) => {
   console.log("Inside nodemailerhelper");
 
   // Create email
@@ -21,8 +21,8 @@ exports.sendEmail = (recipient, subject, body, filenames = []) => {
     text: body.replace(/\\n/g, '\n'),
   };
   // Only add attachments if we have any filenames
-  if (filenames.length > 0) {
-    mailOptions.attachments = filenames.map((filename) => ({
+  if (attachmentFilenames.length > 0) {
+    mailOptions.attachments = attachmentFilenames.map((filename) => ({
       filename: filename,
       path: getFilePath(filename),
     }));
@@ -30,9 +30,9 @@ exports.sendEmail = (recipient, subject, body, filenames = []) => {
   // add this section back to turn on sending emails via OC email server
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("Error: " + error);
+      console.log("Error: ", error);
     } else {
-      console.log("Email sent: " + info.response);
+      console.log("Email sent: ", info.response);
     }
   });
 };
