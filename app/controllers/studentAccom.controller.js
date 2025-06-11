@@ -147,13 +147,15 @@ exports.findOne = (req, res) => {
 exports.findAllForStudent = (req, res) => {
   const studentId = req.params.studentId;
   StudentAccom.findAll({
-    where: { studentId: studentId },
-    include: [
-      { model: db.accommodation },
-      { model: db.semester },
-      { model: db.student },
-    ],
-  })
+  include: [
+    { model: db.accommodation },
+    { model: db.semester },
+    { 
+      model: db.student,
+      where: { ocStudentId: studentId }
+    },
+  ],
+})
     .then((data) => {
       if (data) {
         res.send(data);
