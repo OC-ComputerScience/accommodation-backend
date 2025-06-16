@@ -9,6 +9,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: false,
         },
+        dateApproved: {
+            type: Sequelize.DATE,
+            allowNull: true,
+        },
         approvedBy: {
             type: Sequelize.STRING,
             allowNull: true,
