@@ -12,6 +12,11 @@ module.exports = (sequalize, Sequelize) => {
         email: {
             type: Sequelize.STRING,
             allowNull: false,
+        },
+        restricted: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: 0
         }
     }, {
 

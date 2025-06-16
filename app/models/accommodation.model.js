@@ -21,6 +21,11 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: true,
         },
+        status: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            defaultValue: 'active'
+        }
     }, {
         timestamps: false
     });
