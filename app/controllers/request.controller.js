@@ -171,8 +171,10 @@ exports.update = async (req, res) => {
   const formattedList = studentAccoms
     .map((sa) => {
       const accom = sa.accommodation;
-      return accom?.title && accom?.categoryName
-        ? `• ${accom.title} (${accom.categoryName})`
+      const today = new Date().toDateString();
+      const updatedDate = new Date(sa.updatedAt).toDateString();
+      return accom?.title && accom?.categoryName && today === updatedDate
+        ? `• ${accom.title} (${accom.categoryName}) - ${sa.status}`
         : null;
     })
     .filter(Boolean)
