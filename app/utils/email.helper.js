@@ -8,6 +8,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
   // Get the student
   const student = await db.student.findByPk(studentId);
   const semester = await db.semester.findByPk(semesterId);
+  let isUpdate = false;
 
   const studentAccommodations = await db.studentAccom.findAll({
     where: {
@@ -106,6 +107,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
       const timeDiff = Math.abs(studentAccommodation.dataValues.createdAt.getTime() - studentAccommodation.dataValues.updatedAt.getTime());
       if(timeDiff < 1000) { // less than a second difference that means it is a new entry.
         body += " **NEW**\n";
+        isUpdate = true;
       }
       else
       {
@@ -116,10 +118,14 @@ exports.emailFaculty = async (studentId, semesterId) => {
         filenames.push(studentAccommodation.dataValues.accommodation.explanationFile);
         
       }
-      nodemailer.logEmail(studentAccommodation.dataValues.studentAccomId,'Academics', studentId, email, body);
-    }
-    for (const course of instructorInfo.courses) {
-      body += `Course: ${course.CourseID} ${course.CourseName}\n`;
+      if (isUpdate)
+        nodemailer.logEmail(
+          studentAccommodation.dataValues.studentAccomId,
+          "Academics",
+          studentId,
+          email,
+          body
+        );
     }
     body += "\n";
 
@@ -127,12 +133,13 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
 
     // Send email
-    nodemailer.sendEmail(
-      "d.ndayegamiye@eagles.oc.edu", // change line to send to actual instructor email
-      "Notice of Student Accommodations",
-      body,
-      filenames
-    );
+    if (isUpdate)
+      nodemailer.sendEmail(
+        "d.ndayegamiye@eagles.oc.edu", // change line to send to actual instructor email
+        "Notice of Student Accommodations",
+        body,
+        filenames
+      );
 
   }
 };
