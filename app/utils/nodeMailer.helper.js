@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const {getFilePath} = require("./fileStorage.helper");
 const db = require("../models");
+const fs = require("fs");
 
 const transporter = nodemailer.createTransport({
   service: "gmail", // Or use another email provider
@@ -20,14 +21,40 @@ exports.sendEmail = (recipient, subject, body, attachmentFilenames = []) => {
     subject: subject,
     text: body.replace(/\\n/g, '\n'),
   };
+
   // Only add attachments if we have any filenames
   if (attachmentFilenames.length > 0) {
-    mailOptions.attachments = attachmentFilenames.map((filename) => ({
-      filename: filename,
-      path: getFilePath(filename),
-    }));
+    const validAttachments = attachmentFilenames
+      .map((filename) => {
+        const filePath = getFilePath(filename);
+
+        if (fs.existsSync(filePath)) {
+          return {
+            filename: filename,
+            path: filePath,
+          };
+        } else {
+          console.warn(
+            `Attachment file not found: ${filePath} (filename: ${filename})`
+          );
+          return null;
+        }
+      })
+      .filter(Boolean); // Remove null entries
+
+    if (validAttachments.length > 0) {
+      mailOptions.attachments = validAttachments;
+      console.log(
+        `Added ${validAttachments.length} valid attachments out of ${attachmentFilenames.length} requested`
+      );
+    } else {
+      console.warn(
+        "No valid attachments found - email will be sent without attachments"
+      );
+    }
   }
-  // add this section back to turn on sending emails via OC email server
+
+  // Send email (with or without valid attachments)
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log("Error: ", error);
