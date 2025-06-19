@@ -235,7 +235,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.studentAccomId;
   StudentAccom.destroy({
-    where: { id: id },
+    where: { studentAccomId: id },
   })
     .then((num) => {
       if (num == 1) {
