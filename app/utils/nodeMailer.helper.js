@@ -4,11 +4,11 @@ const db = require("../models");
 const fs = require("fs");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Or use another email provider
-  auth: {
-    user: process.env.TRANSPONDER_EMAIL,
-    pass: process.env.TRANSPONDER_PW, // Use environment variables for security
-  },
+  host: "SMTP.oc.edu",
+  port: 25,
+  secure: false,
+  debug: true, // show debug output
+  logger: true, // log information in console
 });
 
 exports.sendEmail = (recipient, subject, body, attachmentFilenames = []) => {
