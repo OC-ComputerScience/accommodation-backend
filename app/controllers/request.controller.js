@@ -182,7 +182,7 @@ exports.update = async (req, res) => {
       const updatedDate = new Date(sa.updatedAt).toDateString();
       if(accom?.title && accom?.categoryName && today === updatedDate)
       {
-        filenames.push(accom.explanationFile);
+        if(sa.status == "Approved") filenames.push(accom.explanationFile);
         return `• ${accom.title} (${accom.categoryName}) - ${sa.status}`;
       }
       else return null;
