@@ -8,7 +8,6 @@ exports.emailFaculty = async (studentId, semesterId) => {
   // Get the student
   const student = await db.student.findByPk(studentId);
   const semester = await db.semester.findByPk(semesterId);
-  let isUpdate = false;
 
   const studentAccommodations = await db.studentAccom.findAll({
     where: {
@@ -27,7 +26,6 @@ exports.emailFaculty = async (studentId, semesterId) => {
   });
   console.log("get student Classes");
   // Get the student's faculty
-  // console.log("looking for the id", studentId);
   console.log("looking for the semester", semester.semester);
   console.log("Student ID (auto-incremented):", student.studentId);
   console.log("JL Student ID (school ID):", student.ocStudentId);
@@ -39,7 +37,6 @@ exports.emailFaculty = async (studentId, semesterId) => {
     "1568650" +
     "/" +
     semester.semester;
-  console.log("Requesting:", ocRequest);
 
   await axios
     .get(ocRequest)
@@ -96,36 +93,39 @@ exports.emailFaculty = async (studentId, semesterId) => {
   // Step 2: Send one email per instructor
   for (const [email, instructorInfo] of instructorMap.entries()) {
     let body = `Dear ${instructorInfo.name},\n\n`;
-    body += `This email is to inform you that ${student.fName} ${student.lName} has the following Academic Accommodations in your courses:\n\n`;
+    body += `This email is to inform you of an update regarding ${student.fName} ${student.lName}'s accommodations for the following courses:\n\n`;
 
     for (const course of instructorInfo.courses) {
-      body += `Course: ${course.CourseID} ${course.CourseName}\n`;
+      body += `${course.CourseID} ${course.CourseName}\n`;
     }
+    body += "Accommodations:\n";
     for (const studentAccommodation of studentAccommodations) {
-      if(studentAccommodation.dataValues.status != "Approved") {continue;}
-      body += `- ${studentAccommodation.dataValues.accommodation.title}`;
-      const timeDiff = Math.abs(studentAccommodation.dataValues.createdAt.getTime() - studentAccommodation.dataValues.updatedAt.getTime());
-      if(timeDiff < 1000) { // less than a second difference that means it is a new entry.
-        body += " **NEW**\n";
-        isUpdate = true;
-      }
-      else
-      {
-        body += "\n"
+      const today = new Date();
+      const updatedAt = new Date(studentAccommodation.dataValues.updatedAt);
+
+      // Set both dates to start of day for comparison
+      today.setHours(0, 0, 0, 0);
+      updatedAt.setHours(0, 0, 0, 0);
+
+      if (today.getTime() === updatedAt.getTime()) {
+        // less than a second difference that means it is a new entry.
+        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status})\n`;
+      } else {
+        continue;
       }
 
       if (studentAccommodation.dataValues.accommodation.explanationFile) {
-        filenames.push(studentAccommodation.dataValues.accommodation.explanationFile);
-        
-      }
-      if (isUpdate)
-        nodemailer.logEmail(
-          studentAccommodation.dataValues.studentAccomId,
-          "Academics",
-          studentId,
-          email,
-          body
+        filenames.push(
+          studentAccommodation.dataValues.accommodation.explanationFile
         );
+      }
+      nodemailer.logEmail(
+        studentAccommodation.dataValues.studentAccomId,
+        "Academics",
+        studentId,
+        email,
+        body
+      );
     }
     body += "\n";
 
@@ -133,7 +133,6 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
 
     // Send email
-    if (isUpdate)
       nodemailer.sendEmail(
         "d.ndayegamiye@eagles.oc.edu", // change line to send to actual instructor email
         "Notice of Student Accommodations",
@@ -143,4 +142,3 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
   }
 };
-

@@ -42,6 +42,7 @@ exports.findAll = (req, res) => {
               as: 'student'
           }]
       }],
+      order: [['date', 'DESC']]
   })
   .then((data) => {
       console.log("Backend: Found data:", JSON.stringify(data, null, 2));

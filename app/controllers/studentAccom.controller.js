@@ -26,74 +26,55 @@ exports.create = async (req, res) => {
       });
       return;
     }
-    //delete all studentAccoms for this student and semester
-    //a student can only have one accommodation request approved per semester
-    const existingAccommodations = await StudentAccom.findAll({
-      where: {
-        studentId: student.studentId,
-        semesterId: semester.semesterId,
-      },
-    });
+    const updateResults = [];
+    const toCreate = [];
 
-    // compare existing accomodations to new ones and set existing to Removed.
-    for (const existingAccommodation of existingAccommodations) {
-      const found = selectedAccommodations.find(
-        (accom) => accom.accomId === existingAccommodation.accomId
+    for (const accom of selectedAccommodations) {
+      // Try to update first
+      const [affectedRows] = await StudentAccom.update(
+        {
+          status: accom.status,
+          adminId: accom.adminId,
+          updatedAt: new Date(),
+        },
+        {
+          where: {
+            studentId: student.studentId,
+            semesterId: semester.semesterId,
+            accomId: accom.accomId,
+          },
+        }
       );
 
-      if (!found) {
-        const result = await StudentAccom.update(
-          {
-            status: "Removed",
-          },
-          {
-            where: {
-              studentAccomId: existingAccommodation.studentAccomId,
-            },
-          }
-        );
-
-      }
-      else{
-        // remove the accommodation from the list of selected accommodations
-        // by checking the ones with the same accomId
-        // update the studentAccom status to Approved
-        selectedAccommodations.splice(
-          selectedAccommodations.findIndex(
-            (accom) => accom.accomId === existingAccommodation.accomId
-          ),
-          1
-        );
-        const result = await StudentAccom.update(
-          {
-            status: "Approved",
-          },
-          {
-            where: {
-              studentAccomId: existingAccommodation.studentAccomId,
-            },
-          }
-        );
-
+      if (affectedRows === 0) {
+        // No rows were updated, so this accommodation doesn't exist yet
+        toCreate.push({
+          accomId: accom.accomId,
+          accomCatId: accom.accomCatId,
+          data: accom.data || null,
+          status: accom.status,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          semesterId: semester.semesterId,
+          studentId: student.studentId,
+          adminId: accom.adminId,
+        });
+      } else {
+        updateResults.push(`Updated accommodation ${accom.accomId}`);
       }
     }
 
-    // Step 2: Build all student accommodations
-    const studentAccoms = selectedAccommodations.map((accom) => ({
-      accomId: accom.accomId,
-      data: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      semesterId: semester.semesterId,
-      studentId: student.studentId,
-      adminId: accom.adminId
-    }));
+    // Bulk create the new ones
+    let createdRequests = [];
+    if (toCreate.length > 0) {
+      createdRequests = await StudentAccom.bulkCreate(toCreate);
+    }
 
-    // Step 3: Bulk create them all at once
-    const createdRequests = await StudentAccom.bulkCreate(studentAccoms);
-
-    res.send(createdRequests);
-  } catch (err) {
+    res.send({
+      updated: updateResults,
+      created: createdRequests,
+    });
+      } catch (err) {
     res.status(500).send({
       message:
         err.message ||

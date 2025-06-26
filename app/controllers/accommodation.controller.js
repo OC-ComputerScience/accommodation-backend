@@ -34,7 +34,6 @@ exports.findAll = (req, res) => {
   var condition = accomId ? { accomId: { [Op.like]: `%${accomId}%` } } : null;
   Accommodation.findAll({ where: condition })
     .then((data) => {
-      console.log(data.length);
       if (data && data.length > 0) {
         res.status(200).send(data);
       } else {
@@ -153,15 +152,10 @@ exports.uploadFile = async (req, res) => {
         return res.status(400).send({ message: "Please upload a file!" });
       }
 
-      // if(accommodation.explanationFile && accommodation.explanationFile !== req.file.filename){    // remove old if there is one and hasn't already been replaced
-      //   console.log("Remove Old File", accommodation.explanationFile)
-      //   FileHelpers.remove(accommodation.explanationFile)
-      // }
-
+      
       let updatedAccomodation = accommodation.dataValues;
       updatedAccomodation.explanationFile = req.file.filename
 
-      console.log(updatedAccomodation)
       await Accommodation.update(updatedAccomodation, {
         where: {
           accomId: accomId
