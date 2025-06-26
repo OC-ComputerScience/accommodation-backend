@@ -93,7 +93,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
   // Step 2: Send one email per instructor
   for (const [email, instructorInfo] of instructorMap.entries()) {
     let body = `Dear ${instructorInfo.name},\n\n`;
-    body += `This email is to inform you of an update regarding ${student.fName} ${student.lName}'s accommodations for the following courses:\n\n`;
+    body += `This email is to inform you of an update regarding ${student.fName} ${student.lName}'s accommodations for the following courses for ${semester.semester}:\n\n`;
 
     for (const course of instructorInfo.courses) {
       body += `${course.CourseID} ${course.CourseName}\n`;
