@@ -52,7 +52,7 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
     for (const studentAccommodation of studentAccommodations) {
       const accommodation = studentAccommodation.accommodation;
       if (accommodation.accomCatId === accomCatId) {
-        body += `\n\n${accommodation.title}`;
+        body += `\n\n${accommodation.title} - ${studentAccommodation.status}`;
         filenames.push(accommodation.explanationFile);
         nodemailer.logEmail(studentAccommodation.studentAccomId, accommodation.categoryName, studentId, recipient, body);
       }
