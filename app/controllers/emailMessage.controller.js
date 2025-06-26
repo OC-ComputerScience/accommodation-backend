@@ -35,7 +35,6 @@ exports.update = (req, res) => {
             if (result == 1) {
                 res.send({ message: "Email message was updated successfully." });
             } else {
-                console.log(result);
                 res.status(404).send({
                     message: `Cannot update email message with id=${emailMessageId}. Email message not found or request body is empty.`
                 });

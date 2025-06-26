@@ -4,7 +4,6 @@ const emailService = require("../utils/emailAdmin");
 
 exports.sendCategoryEmail = async (req, res) => {
   const { accomCatId, studentId, semesterId } = req.body; // Extract data from request body
-  console.log("Received accomCatId:", accomCatId);
 
   try {
     // Find the accommodation by accomId and include the related category & email message
@@ -37,7 +36,6 @@ exports.sendCategoryEmail = async (req, res) => {
     if (!categoryEmail) {
       return res.status(400).json({ error: "No email found for category" });
     }
-    console.log("Received accomCatId:", accomCatId);
 
     // Retrieve the predefined email text from the EmailSection table
     const emailMessage = accommodation.accomCat.emailMessages?.[0]; // Get first email message (if exists)

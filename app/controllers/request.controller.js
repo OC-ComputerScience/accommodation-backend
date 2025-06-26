@@ -20,6 +20,11 @@ exports.create = async (req, res) => {
       studentId: req.body.studentId,
     };
 
+    const semester = await db.semester.findByPk(req.body.semesterId);
+    if (!semester) {
+      return res.status(404).json({ message: "Semester not found" });
+    }
+
     // Insert request into the database
     const createdRequest = await Request.create(request);
 
@@ -41,7 +46,8 @@ exports.create = async (req, res) => {
       "student_accommodation_request_received",
       req.body.studentId,
       req.body.email,
-      emailMessage.text
+      emailMessage.text.replace('{semesterName}', semester.semester)
+
     );
 
 
@@ -49,7 +55,8 @@ exports.create = async (req, res) => {
     nodemailerHelper.sendEmail(
       req.body.email,
       emailMessage.description,
-      emailMessage.text
+      emailMessage.text.replace('{semesterName}', semester.semester)
+
     );
 
     res.status(201).json(createdRequest);
@@ -162,17 +169,18 @@ exports.update = async (req, res) => {
     include: [
       {
         model: db.accommodation,
-        attributes: ["title", "categoryName"],
+        attributes: ["title", "categoryName", "explanationFile"],
       },
     ],
   });
-  console.log("studentAccoms:", studentAccoms);
+  const filenames = [];
 
   const formattedList = studentAccoms
     .map((sa) => {
       const accom = sa.accommodation;
       const today = new Date().toDateString();
       const updatedDate = new Date(sa.updatedAt).toDateString();
+      if(sa.status == "Approved") filenames.push(accom.explanationFile);
       return accom?.title && accom?.categoryName && today === updatedDate
         ? `• ${accom.title} (${accom.categoryName}) - ${sa.status}`
         : null;
@@ -200,7 +208,7 @@ exports.update = async (req, res) => {
   })
     .then(async (num) => {
       if (num == 1) {
-        if(req.body.approvedBy == null){
+        if(req.body.approvedBy == null || formattedList.length == 0) {
           message = " Your accommodation request for the " + semester.semester + " has been denied! \n\n";
         }
         // Only send email **after** request is successfully created
@@ -216,7 +224,8 @@ exports.update = async (req, res) => {
         nodemailerHelper.sendEmail(
           request.student.email,
           emailMessage.description,
-          message
+          message,
+          filenames
         );
 
         res.send({

@@ -275,7 +275,6 @@ exports.authorize = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  console.log(req.body);
   if (req.body === null) {
     res.send({
       message: "User has already been successfully logged out!",
