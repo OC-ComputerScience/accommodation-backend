@@ -93,7 +93,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
   // Step 2: Send one email per instructor
   for (const [email, instructorInfo] of instructorMap.entries()) {
     let body = `Dear ${instructorInfo.name},\n\n`;
-    body += `This email is to inform you of an update regarding ${student.fName} ${student.lName}'s accommodations for the following courses for ${semester.semester}:\n\n`;
+    body += `This email is to inform you of an update regarding the accommodations for ${student.fName} ${student.lName} for the following courses for ${semester.semester}:\n\n`;
 
     for (const course of instructorInfo.courses) {
       body += `${course.CourseID} ${course.CourseName}\n`;
@@ -109,12 +109,13 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
       if (today.getTime() === updatedAt.getTime()) {
         // less than a second difference that means it is a new entry.
-        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status})\n`;
+        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} today)\n`;
       } else {
-        continue;
+        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} previously)\n`;
+
       }
 
-      if (studentAccommodation.dataValues.accommodation.explanationFile) {
+      if (studentAccommodation.dataValues.accommodation.explanationFile && studentAccommodation.dataValues.status === "Approved") {
         filenames.push(
           studentAccommodation.dataValues.accommodation.explanationFile
         );

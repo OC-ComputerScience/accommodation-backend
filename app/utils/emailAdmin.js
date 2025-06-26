@@ -51,8 +51,18 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
     body += `\n\nAccommodations:`;
     for (const studentAccommodation of studentAccommodations) {
       const accommodation = studentAccommodation.accommodation;
+      const today = new Date();
+      const updatedAt = new Date(studentAccommodation.updatedAt);
+
+      // Set both dates to start of day for comparison
+      today.setHours(0, 0, 0, 0);
+      updatedAt.setHours(0, 0, 0, 0);
+
       if (accommodation.accomCatId === accomCatId) {
-        body += `\n\n${accommodation.title} - ${studentAccommodation.status}`;
+        if (today.getTime() === updatedAt.getTime())
+        body += `\n\n${accommodation.title} - ${studentAccommodation.status} today`;
+      else 
+        body += `\n\n${accommodation.title} - ${studentAccommodation.status} previously`;
         filenames.push(accommodation.explanationFile);
         nodemailer.logEmail(studentAccommodation.studentAccomId, accommodation.categoryName, studentId, recipient, body);
       }
