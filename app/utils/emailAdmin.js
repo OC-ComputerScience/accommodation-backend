@@ -48,7 +48,7 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
 
     // Fix line breaks
     body = body.replace(/\\n/g, "\n"); // for plain text
-    body += `\n\naccommodation:`;
+    body += `\n\nAccommodations:`;
     for (const studentAccommodation of studentAccommodations) {
       const accommodation = studentAccommodation.accommodation;
       if (accommodation.accomCatId === accomCatId) {
