@@ -98,7 +98,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
     for (const course of instructorInfo.courses) {
       body += `${course.CourseID} ${course.CourseName}\n`;
     }
-    body += "Accommodations:\n";
+    body += "\tAccommodations:\n";
     for (const studentAccommodation of studentAccommodations) {
       const today = new Date();
       const updatedAt = new Date(studentAccommodation.dataValues.updatedAt);
@@ -109,9 +109,9 @@ exports.emailFaculty = async (studentId, semesterId) => {
 
       if (today.getTime() === updatedAt.getTime()) {
         // less than a second difference that means it is a new entry.
-        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} today)\n`;
+        body += `\t- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} today)\n`;
       } else {
-        body += `- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} previously)\n`;
+        body += `\t- ${studentAccommodation.dataValues.accommodation.title} (${studentAccommodation.dataValues.status} previously)\n`;
 
       }
 
