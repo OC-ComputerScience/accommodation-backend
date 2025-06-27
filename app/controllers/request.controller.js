@@ -180,10 +180,13 @@ exports.update = async (req, res) => {
       const accom = sa.accommodation;
       const today = new Date().toDateString();
       const updatedDate = new Date(sa.updatedAt).toDateString();
-      if(accom?.title && accom?.categoryName && today === updatedDate)
+      if(accom?.title && accom?.categoryName)
       {
         if(sa.status == "Approved") filenames.push(accom.explanationFile);
-        return `• ${accom.title} (${accom.categoryName}) - ${sa.status}`;
+        if( today === updatedDate)
+        return `• ${accom.title} (${accom.categoryName}) - ${sa.status} today`;
+        else
+        return `• ${accom.title} (${accom.categoryName}) - ${sa.status} previously`;
       }
       else return null;
     })
