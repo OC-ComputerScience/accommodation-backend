@@ -91,9 +91,9 @@ exports.findOne = (req, res) => {
 };
 
 //update a request by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
-  const category = db.accomCat.findOne({
+  const category = await db.accomCat.findOne({
     where: { name: req.body.categoryName },
   })
   req.body.accomCatId = category.accomCatId;
