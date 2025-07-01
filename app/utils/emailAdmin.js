@@ -63,7 +63,7 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
         body += `\n\t-${accommodation.title} - ${studentAccommodation.status} today`;
       else 
         body += `\n\t-${accommodation.title} - ${studentAccommodation.status} previously`;
-        filenames.push(accommodation.explanationFile);
+        if (accommodation.explanationFile) filenames.push(accommodation.explanationFile);
         nodemailer.logEmail(studentAccommodation.studentAccomId, accommodation.categoryName, studentId, recipient, body);
       }
     }
