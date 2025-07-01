@@ -12,6 +12,7 @@ exports.create = (req, res) => {
     title: req.body.title,
     description: req.body.description,
     explanationFile: req.body.explanationFile,
+    accomCatId: req.body.accomCatId,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -92,6 +93,10 @@ exports.findOne = (req, res) => {
 //update a request by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
+  const category = db.accomCat.findOne({
+    where: { name: req.body.categoryName },
+  })
+  req.body.accomCatId = category.accomCatId;
   Accommodation.update(req.body, {
     where: { accomId: id },
   })
