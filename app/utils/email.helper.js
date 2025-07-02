@@ -131,7 +131,7 @@ exports.emailFaculty = async (studentId, semesterId) => {
     }
     body += "\n";
 
-    body += `Please contact Student Success with any questions.`;
+    body += `Thank you for your assistance. If you have any questions, please contact me at ext. 5922.\n\nMichael Ferguson\nAssistant Director of Student Success & Accessibility Resources`;
 
 
     // Send email
