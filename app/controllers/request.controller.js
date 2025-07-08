@@ -214,7 +214,7 @@ exports.update = async (req, res) => {
     .then(async (num) => {
       if (num == 1) {
         if(req.body.approvedBy == null || formattedList.length == 0) {
-          message = " Your accommodation request for the " + semester.semester + " has been denied! \n\n";
+          message = "Dear Student,\nThank you for submitting your accommodation request for the" + semester.semester + " term.\nAfter careful consideration and review of the documentation provided, we regret to inform you that your request for accommodations has not been approved at this time.\n\nIf you have any questions, please contact me at ext. 5922.\n\nSincerely,\nMichael Ferguson,\nAssistant Director of Student Success & Accessibility Resources";
           filenames = [];
         }
         // Only send email **after** request is successfully created
