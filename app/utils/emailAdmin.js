@@ -48,7 +48,7 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
 
     // Fix line breaks
     body = body.replace(/\\n/g, "\n"); // for plain text
-    body += `\n\n\tAccommodations:`;
+    body += `\n\nAccommodations:`;
     for (const studentAccommodation of studentAccommodations) {
       const accommodation = studentAccommodation.accommodation;
       const today = new Date();
@@ -60,9 +60,9 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
 
       if (accommodation.accomCatId === accomCatId) {
         if (today.getTime() === updatedAt.getTime())
-        body += `\n\t-${accommodation.title} - ${studentAccommodation.status} today`;
+        body += `\n-${accommodation.title} - ${studentAccommodation.status} today`;
       else 
-        body += `\n\t-${accommodation.title} - ${studentAccommodation.status} previously`;
+        body += `\n-${accommodation.title} - ${studentAccommodation.status} previously`;
         if (accommodation.explanationFile && studentAccommodation.status === 'Approved') filenames.push(accommodation.explanationFile);
         nodemailer.logEmail(studentAccommodation.studentAccomId, accommodation.categoryName, studentId, recipient, body);
       }
