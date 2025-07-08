@@ -215,6 +215,7 @@ exports.update = async (req, res) => {
       if (num == 1) {
         if(req.body.approvedBy == null || formattedList.length == 0) {
           message = " Your accommodation request for the " + semester.semester + " has been denied! \n\n";
+          filenames = [];
         }
         // Only send email **after** request is successfully created
         const nodemailerHelper = require("../utils/nodeMailer.helper");
