@@ -24,6 +24,10 @@ exports.create = async (req, res) => {
     if (!semester) {
       return res.status(404).json({ message: "Semester not found" });
     }
+    const student = await db.student.findByPk(req.body.studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
     // Insert request into the database
     const createdRequest = await Request.create(request);
@@ -46,7 +50,7 @@ exports.create = async (req, res) => {
       "student_accommodation_request_received",
       req.body.studentId,
       req.body.email,
-      emailMessage.text.replace('{semesterName}', semester.semester)
+      emailMessage.text.replace('{semesterName}', semester.semester).replace('{studentName}', student.fName)
 
     );
 
@@ -55,7 +59,7 @@ exports.create = async (req, res) => {
     nodemailerHelper.sendEmail(
       req.body.email,
       emailMessage.description,
-      emailMessage.text.replace('{semesterName}', semester.semester)
+      emailMessage.text.replace('{semesterName}', semester.semester).replace('{studentName}', student.fName)
 
     );
 
@@ -203,10 +207,11 @@ exports.update = async (req, res) => {
       ],
     });
     const semester = await db.semester.findByPk(semesterId);
+    const student = await db.student.findByPk(studentId);
 
 
   let message = emailMessage.text.replace('{accommodationList}', formattedList);
-  message = message.replace('{semesterName}', semester.semester);
+  message = message.replace('{semesterName}', semester.semester).replace('{studentName}', student.fName);
 
   Request.update(req.body, {
     where: { requestId: id },
@@ -214,7 +219,7 @@ exports.update = async (req, res) => {
     .then(async (num) => {
       if (num == 1) {
         if(req.body.approvedBy == null || formattedList.length == 0) {
-          message = "Dear Student,\nThank you for submitting your accommodation request for the " + semester.semester + " term.\nAfter careful consideration and review of the documentation provided, we regret to inform you that your request for accommodations has not been approved at this time.\n\nIf you have any questions, please contact me at ext. 5922.\n\nSincerely,\nMichael Ferguson,\nAssistant Director of Student Success & Accessibility Resources";
+          message = "Dear " + student.fName + ",\nThank you for submitting your accommodation request for the " + semester.semester + " term.\nAfter careful consideration and review of the documentation provided, we regret to inform you that your request for accommodations has not been approved at this time.\n\nIf you have any questions, please contact me at ext. 5922.\n\nSincerely,\nMichael Ferguson,\nAssistant Director of Student Success & Accessibility Resources";
           filenames.length = 0;
         }
         // Only send email **after** request is successfully created
