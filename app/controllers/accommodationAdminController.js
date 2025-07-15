@@ -54,7 +54,7 @@ exports.sendCategoryEmail = async (req, res) => {
 
     // Send the email using the email service
     await emailService.sendEmail({
-      to: "d.ndayegamiye@eagles.oc.edu", // Send to the category-specific email address
+      to: "michael.ferguson@oc.edu", // Send to the category-specific email address
       // subject: `Accommodation Approved`,
       subject: `Accommodation Approved: ${accommodation.accomCat.name}`, // Email subject line
       text: emailText, // Email body content
