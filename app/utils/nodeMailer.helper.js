@@ -16,7 +16,7 @@ exports.sendEmail = (recipient, subject, body, attachmentFilenames = []) => {
 
   // Create email
   const mailOptions = {
-    from: "studentsuccess@oc.edu",
+    from: "michael.ferguson@oc.edu",
     to: recipient,
     subject: subject,
     text: body.replace(/\\n/g, '\n'),
@@ -71,7 +71,7 @@ exports.logEmail = (studAccId = null, category, studentId, recipient, body) => {
           category: category,
           studentId: studentId,
           toEmailAddress: recipient,
-          senderEmail: "studentsuccess@oc.edu",
+          senderEmail: "michael.ferguson@oc.edu",
           date: new Date(),
           messageContent: body.replace(/\\n/g, '\n'),
         };
