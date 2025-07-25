@@ -35,7 +35,7 @@ exports.send_non_faculty_emails = async (studentId, semesterId, accomCatIds) => 
     }
 
     // Prepare email details
-    const recipient = "michael.ferguson@oc.edu"; // change this email to be dynamic
+    const recipient = "d.ndayegamiye@eagles.oc.edu"; // change this email to be dynamic
     const subject = fillTemplate(message.description, { studentName: `${student.fName} ${student.lName}` });
     const messageData = {
       studentName: `${student.fName} ${student.lName}`,

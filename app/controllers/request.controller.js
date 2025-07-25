@@ -1,4 +1,5 @@
 const db = require("../models");
+const { checkAutoRequests } = require("../utils/automatizedRequest");
 const Request = db.request;
 const Op = db.Sequelize.Op;
 
@@ -31,6 +32,8 @@ exports.create = async (req, res) => {
 
     // Insert request into the database
     const createdRequest = await Request.create(request);
+    if(req.body.approvalType === 'auto')
+      checkAutoRequests(req.body.studentId, req.body.semesterId);
 
     // Only send email **after** request is successfully created
      const nodemailerHelper = require('../utils/nodeMailer.helper');
@@ -150,6 +153,33 @@ exports.findOne = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message: err.message || "Error retrieving Request with id=" + id,
+      });
+    });
+};
+
+exports.findLatestApproved = (req, res) => {
+  const studentId = req.params.studentId;
+  db.request.findOne({
+        where: {
+          status: "Approved",
+          studentId: studentId,
+          type: "manual",
+          dateApproved: { [Op.ne]: null },
+        },
+        order: [["dateApproved", "DESC"]],
+      })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find Request with studentId=${studentId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving Request with studentId=" + studentId,
       });
     });
 };

@@ -12,6 +12,9 @@ module.exports = (app) => {
 
     //retrieve all requests
     router.get("/", [authenticate], requests.findAll);
+
+    // retrieve latest manually approved request
+    router.get("/latestApproved/:studentId", [authenticate], requests.findLatestApproved);
     
     //Retrieve all requests for student
     router.get("/studentReq/:studentId", [authenticate], requests.findAllForStudent);
