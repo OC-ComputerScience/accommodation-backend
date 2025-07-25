@@ -62,21 +62,24 @@ exports.checkAutoRequests = async (studentId, newSemesterId) => {
         });
 
         await db.studentAccom.bulkCreate(newAccommodations);
-        await db.request.update(
-          {
+        // Step 1: Find the latest matching request
+        const latestRequest = await db.request.findOne({
+          where: {
+            studentId: studentId,
+            semesterId: newSemesterId,
+          },
+          order: [["dateMade", "DESC"]], // or use 'updatedAt' if more appropriate
+        });
+
+        // Step 2: Update only that record
+        if (latestRequest) {
+          await latestRequest.update({
             status: "Auto",
             dateApproved: new Date(),
             approvedBy: request.approvedBy,
             type: "auto",
-          },
-          {
-            where: {
-              studentId: studentId,
-              semesterId: newSemesterId,
-            },
-          }
-        );
-
+          });
+        }
         send_non_faculty_emails(studentId, newSemesterId, accomCatIds);
         emailFaculty(studentId, newSemesterId);
 
