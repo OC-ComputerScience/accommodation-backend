@@ -20,6 +20,12 @@ exports.dailyEmail = async () => {
       const studentId = request.studentId;
       const newSemesterId = request.semesterId;
       const accomCatIds = [];
+      const semester = await db.semester.findByPk(newSemesterId);
+      const today = new Date();
+      if(today <= new Date(semester.startDate)) {
+        continue;
+      }
+
       db.request.update(
         {
           status: "Approved",
@@ -53,7 +59,7 @@ exports.dailyEmail = async () => {
         accomCatIds.push(accom.accommodation.accomCatId);
       }
 
-      send_non_faculty_emails(studentId, newSemesterId, accomCatIds);
+      send_non_faculty_emails(studentId, newSemesterId, new Set(accomCatIds));
       emailFaculty(studentId, newSemesterId);
 
       const filenames = [];
@@ -73,7 +79,6 @@ exports.dailyEmail = async () => {
           },
         ],
       });
-      const semester = await db.semester.findByPk(newSemesterId);
       const student = await db.student.findByPk(studentId);
 
       let message = emailMessage.text.replace(

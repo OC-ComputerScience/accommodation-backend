@@ -309,3 +309,20 @@ exports.delete = (req, res) => {
     });
 };
 
+exports.checkAutoRequests = async (req, res) => {
+  const { studentId, semesterId } = req.query;
+  console.log("here" ,req.query);
+  const request = await Request.findOne({
+    where: {
+      studentId: studentId,
+      semesterId: semesterId,
+      status: "Approved",
+      type: "auto",
+    },
+  });
+  if (!request) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
+};
