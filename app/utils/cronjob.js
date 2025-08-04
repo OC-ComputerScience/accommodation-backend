@@ -64,7 +64,8 @@ exports.dailyEmail = async () => {
 
       const filenames = [];
       for (const accom of studentAccommodations) {
-        filenames.push(accom.accommodation.explanationFile);
+        if (accom.accommodation.explanationFile)
+          filenames.push(accom.accommodation.explanationFile);
       }
       const accommodationList = studentAccommodations.map(
         (accom) =>
