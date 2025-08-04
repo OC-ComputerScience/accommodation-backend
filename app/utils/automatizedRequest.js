@@ -3,6 +3,7 @@ const Op = db.Sequelize.Op;
 
 exports.checkAutoRequests = async (studentId, newSemesterId) => {
   try {
+    console.log("inside the checkAutoRequests function");
     const request = await db.request.findOne({
       where: {
         status: "Approved",
