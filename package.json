@@ -8,7 +8,6 @@
     "start": "node server.js",
     "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json accommodations-t4-backend.service .env deploy",
     "winbundle": "md deploy && xcopy app deploy\\app  /s /h /i /y /e && copy server.js deploy && copy *.json deploy && copy accommodations-t4-backend.service deploy && copy .env deploy"
-
   },
   "keywords": [
     "node.js",
@@ -28,6 +27,7 @@
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
+    "node-cron": "^4.2.1",
     "nodemailer": "^6.9.7",
     "parser": "^0.1.4",
     "sequelize": "^6.19.0",

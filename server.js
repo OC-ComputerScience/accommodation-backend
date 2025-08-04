@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const cronjob = require("./app/utils/cronjob.js");
 
 const app = express();
 
@@ -51,6 +52,9 @@ require("./app/routes/studentAccom.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 require("./app/routes/util.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
+
+cronjob.dailyEmail();
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3024;

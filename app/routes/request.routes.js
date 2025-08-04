@@ -28,6 +28,9 @@ module.exports = (app) => {
     //delete a request with id
     router.delete("/:id", [authenticate], requests.delete);
 
+    // check if request is auto
+    router.get("/isAuto/", [authenticate], requests.checkAutoRequests);
+
     app.use("/accommodations-t4/requests", router);
 };
 
