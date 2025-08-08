@@ -12,6 +12,19 @@ exports.create = async (req, res) => {
   }
 
   try {
+    const existingRequest = await Request.findOne({
+      where: {
+        status: "Open",
+        semesterId: req.body.semesterId,
+        studentId: req.body.studentId,
+      },
+    });
+
+    if (existingRequest) {
+      // A matching request already exists
+      return res.status(400).json({message: "An open request already exists for this semester.",});
+    }
+
     // Create request object
     const request = {
       dateMade: new Date(),
@@ -32,41 +45,44 @@ exports.create = async (req, res) => {
 
     // Insert request into the database
     const createdRequest = await Request.create(request);
-    if(req.body.approvalType === 'auto')
+    if (req.body.approvalType === "auto") {
       checkAutoRequests(req.body.studentId, req.body.semesterId);
+      res.status(201).json(createdRequest);
+    } else {
+      // Only send email **after** request is successfully created
+      const nodemailerHelper = require("../utils/nodeMailer.helper");
 
-    // Only send email **after** request is successfully created
-     const nodemailerHelper = require('../utils/nodeMailer.helper');
+      // get email information
+      const emailMessage = await db.emailMessage.findOne({
+        include: [
+          {
+            model: db.accomCat,
+            where: { name: "student_accommodation_request_received" },
+          },
+        ],
+      });
 
-    // get email information
-    const emailMessage = await db.emailMessage.findOne({
-      include: [
-        {
-          model: db.accomCat,
-          where: { name: "student_accommodation_request_received" },
-        },
-      ],
-    });
+      nodemailerHelper.logEmail(
+        null,
+        "student_accommodation_request_received",
+        req.body.studentId,
+        req.body.email,
+        emailMessage.text
+          .replace("{semesterName}", semester.semester)
+          .replace("{studentName}", student.fName)
+      );
 
-    nodemailerHelper.logEmail(
-      null,
-      "student_accommodation_request_received",
-      req.body.studentId,
-      req.body.email,
-      emailMessage.text.replace('{semesterName}', semester.semester).replace('{studentName}', student.fName)
+      console.log("Sending email to:", req.body.email);
+      nodemailerHelper.sendEmail(
+        req.body.email,
+        emailMessage.description,
+        emailMessage.text
+          .replace("{semesterName}", semester.semester)
+          .replace("{studentName}", student.fName)
+      );
 
-    );
-
-
-    console.log("Sending email to:", req.body.email);
-    nodemailerHelper.sendEmail(
-      req.body.email,
-      emailMessage.description,
-      emailMessage.text.replace('{semesterName}', semester.semester).replace('{studentName}', student.fName)
-
-    );
-
-    res.status(201).json(createdRequest);
+      res.status(201).json(createdRequest);
+    }
   } catch (error) {
     console.error("Error creating request:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -311,18 +327,19 @@ exports.delete = (req, res) => {
 
 exports.checkAutoRequests = async (req, res) => {
   const { studentId, semesterId } = req.query;
-  console.log("here" ,req.query);
-  const request = await Request.findOne({
+  const requests = await Request.findAll({
     where: {
       studentId: studentId,
       semesterId: semesterId,
       status: "Approved",
-      type: "auto",
+      type: ["auto", "manual"],
     },
   });
-  if (!request) {
-    res.send(true);
+
+  if (requests.length === 0) {
+    res.send(true); // Neither request exists
   } else {
-    res.send(false);
+    res.send(false); // At least one exists
   }
+
 };
