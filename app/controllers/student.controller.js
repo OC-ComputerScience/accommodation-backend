@@ -68,9 +68,9 @@ exports.findOne = (req, res) => {
 
  exports.findOneForEmail = (req, res) => {
     const email = req.params.email;
-    Student.findAll({where: {email: email}})
+    Student.findOne({where: {email: email}})
       .then((data) => {
-        if(data.length > 0){
+        if(data){
           res.send(data);
         }
         else{
